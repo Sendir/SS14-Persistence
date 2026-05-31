@@ -99,7 +99,7 @@
   id: SyndicateSmokePack
   icon:
     sprite: Objects/Consumable/Smokeables/Cigarettes/Packs/syndicate.rsi
-    state: 'closed'
+    state: closed
   product: CigPackSyndicate
   cost: 700
   category: cargoproduct-category-name-syndicate
@@ -243,7 +243,7 @@
   id: C4
   icon:
     sprite: Objects/Weapons/bombs/c4.rsi
-    state: 'icon'
+    state: icon
   product: C4
   cost: 1400
   category: cargoproduct-category-name-syndicate
@@ -254,7 +254,7 @@
   name: uplink-clothing-no-slips-shoes-name
   icon:
     sprite: Clothing/Shoes/color.rsi
-    state: 'icon'
+    state: icon
   product: ClothingShoesChameleonNoSlips
   cost: 1400
   category: cargoproduct-category-name-syndicate
@@ -264,7 +264,7 @@
   id: ClothingShoesBootsMagSyndie
   icon:
     sprite: clothing/shoes/Boots/magboots-syndicate.rsi
-    state: 'icon'
+    state: icon
   product: ClothingShoesBootsMagSyndie
   cost: 1400
   category: cargoproduct-category-name-syndicate
@@ -375,7 +375,7 @@
   id: ExplodingPen
   icon:
     sprite: Objects/Storage/penbox.rsi
-    state: 'exploding_pen'
+    state: exploding_pen
   product: PenExplodingBox
   cost: 2800
   category: cargoproduct-category-name-syndicate
@@ -426,7 +426,7 @@
   id: HotPotato
   icon:
     sprite: Objects/Weapons/Bombs/hot_potato.rsi
-    state: 'icon'
+    state: icon
   product: HotPotato
   cost: 2800
   category: cargoproduct-category-name-syndicate
@@ -513,7 +513,7 @@
   id: WeaponEnergyCrossbow
   icon:
     sprite: Objects/Weapons/Guns/Basic/energy_crossbow.rsi
-    state: 'icon'
+    state: icon
   product: WeaponEnergyCrossbow
   cost: 3500
   category: cargoproduct-category-name-syndicate
@@ -533,7 +533,7 @@
   id: GlovesNorthStar
   icon:
     sprite: Clothing/Hands/Gloves/northstar.rsi
-    state: 'icon'
+    state: icon
   product: ClothingHandsGlovesNorthStar
   cost: 5600
   category: cargoproduct-category-name-syndicate
@@ -543,7 +543,7 @@
   id: SyndicateRaidSuit
   icon:
     sprite: Clothing/OuterClothing/Armor/syndie-raid.rsi
-    state: 'icon'
+    state: icon
   product: ClothingBackpackSyndicateRaidBundle
   cost: 5600
   category: cargoproduct-category-name-syndicate
@@ -635,7 +635,7 @@
   name: uplink-briefcase-gun-name
   icon:
     sprite: Objects/Storage/Briefcases/briefcase_brown.rsi
-    state: 'icon'
+    state: icon
   product: WeaponSubMachineGunBriefcase
   cost: 9800
   category: cargoproduct-category-name-syndicate
@@ -645,7 +645,7 @@
   id: EstocBundle
   icon:
     sprite: Objects/Weapons/Guns/Rifles/estoc.rsi
-    state: 'icon'
+    state: icon
   product: ClothingBackpackDuffelSyndicateFilledRifle
   cost: 12600
   category: cargoproduct-category-name-syndicate
