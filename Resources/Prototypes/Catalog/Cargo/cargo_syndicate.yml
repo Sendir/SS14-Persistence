@@ -59,16 +59,6 @@
   group: syndicatemarket
 
 - type: cargoProduct
-  id: WeaponPistolViper
-  icon:
-    sprite: Objects/Weapons/Guns/Pistols/viper.rsi
-    state: icon
-  product: WeaponPistolViper
-  cost: 900
-  category: cargoproduct-category-name-syndicate
-  group: syndicatemarket
-
-- type: cargoProduct
   id: ClothingBackpackDuffelSyndicateCostumeClown
   icon: { sprite: Clothing/Back/Duffels/clown.rsi, state: icon }
   product: ClothingBackpackDuffelSyndicateCostumeClown
@@ -242,7 +232,7 @@
 - type: cargoProduct
   id: C4
   icon:
-    sprite: Objects/Weapons/bombs/c4.rsi
+    sprite: Objects/Weapons/Bombs/c4.rsi
     state: icon
   product: C4
   cost: 1400
@@ -254,7 +244,7 @@
   name: uplink-clothing-no-slips-shoes-name
   icon:
     sprite: Clothing/Shoes/color.rsi
-    state: icon
+    state: soles-icon
   product: ClothingShoesChameleonNoSlips
   cost: 1400
   category: cargoproduct-category-name-syndicate
@@ -263,7 +253,7 @@
 - type: cargoProduct
   id: ClothingShoesBootsMagSyndie
   icon:
-    sprite: clothing/shoes/Boots/magboots-syndicate.rsi
+    sprite: Clothing/Shoes/Boots/magboots-syndicate.rsi
     state: icon
   product: ClothingShoesBootsMagSyndie
   cost: 1400
