@@ -227,6 +227,17 @@
   category: cargoproduct-category-name-syndicate
   group: syndicatemarket2
 
+- type: cargoProduct
+  id: CarpHardsuit
+  name: uplink-hardsuit-carp-name
+  icon:
+    sprite: Clothing/OuterClothing/Suits/carpsuit.rsi
+    state: icon
+  product: ClothingOuterHardsuitCarp
+  cost: 600
+  category: cargoproduct-category-name-syndicate
+  group: syndicatemarket
+
 #New Stuff in Rank 2
 
 - type: cargoProduct
