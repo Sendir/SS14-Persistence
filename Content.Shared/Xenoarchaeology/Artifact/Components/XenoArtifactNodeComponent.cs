@@ -72,16 +72,22 @@ public sealed partial class XenoArtifactNodeComponent : Component
     public int TotalConsumedDurability = 0;
 
     /// <summary>
-    /// The threshold at which the node has a 50% chance of shattering on activation.
+    /// The threshold at which the node has a <see cref="ControlPointShatterProbability"/> chance of shattering on activation.
     /// </summary>
     [DataField, AutoNetworkedField, ViewVariables(VVAccess.ReadWrite)]
-    public int AverageShatterDurabilityThreshold = 10;
+    public int ControlPointShatterDurabilityThreshold = 10;
+
+    /// <summary>
+    /// The probability the node will shatter at <see cref="ControlPointShatterDurabilityThreshold"/> 
+    /// </summary>
+    [DataField, AutoNetworkedField, ViewVariables(VVAccess.ReadWrite)]
+    public float ControlPointShatterProbability = .2f;
 
     /// <summary>
     /// The threshold at which the node has a 100% chance of shattering on activation.
     /// </summary>
     [DataField, AutoNetworkedField, ViewVariables(VVAccess.ReadWrite)]
-    public int MaxShatterDurabilityThreshold = 15;
+    public int MaxShatterDurabilityThreshold = 25;
 
     /// <summary>
     /// Shattered nodes cannot be have their durability increased.

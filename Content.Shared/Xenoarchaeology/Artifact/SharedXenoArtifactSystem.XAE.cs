@@ -176,9 +176,9 @@ public abstract partial class SharedXenoArtifactSystem
         // When extraActivations = a, probability is 50%
         // When extraActivations = m, probability is 100%
         // Everything between is a consistent curve.
-        var a = (float)node.Comp.AverageShatterDurabilityThreshold;
+        var a = (float)node.Comp.ControlPointShatterDurabilityThreshold;
         var m = (float)node.Comp.MaxShatterDurabilityThreshold;
-        var n = -.69314718056f /* Approx -ln(2) */ / MathF.Log(a / m);
+        var n = MathF.Log(node.Comp.ControlPointShatterProbability) / MathF.Log(a / m);
         var shatterChance = MathF.Pow(extraActivations / m, n);
 
         return RobustRandom.Prob(shatterChance);
