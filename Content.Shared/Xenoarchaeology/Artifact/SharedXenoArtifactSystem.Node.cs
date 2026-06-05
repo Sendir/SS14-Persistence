@@ -95,8 +95,12 @@ public abstract partial class SharedXenoArtifactSystem
     /// </summary>
     public Entity<XenoArtifactNodeComponent> CreateNode(Entity<XenoArtifactComponent> ent, XenoArchTriggerPrototype trigger, int depth = 0)
     {
-        var entProtoId = _entityTable.GetSpawns(ent.Comp.EffectsTable)
-                                     .First();
+        // Get the correct table based on the depth of the node. Deeper nodes have more valuable options.
+        var tableByDepth = depth <= ent.Comp.RootNodeThreshold ? ent.Comp.RootEffectsTable :
+            depth >= ent.Comp.DeepNodeThreshold ? ent.Comp.DeepEffectsTable :
+            ent.Comp.MainEffectsTable;
+
+        var entProtoId = _entityTable.GetSpawns(tableByDepth).First();
 
         AddNode((ent, ent), entProtoId, out var nodeEnt, dirty: false);
         DebugTools.Assert(nodeEnt.HasValue, "Failed to create node on artifact.");
@@ -383,8 +387,7 @@ public abstract partial class SharedXenoArtifactSystem
 
         var artifact = _xenoArtifactQuery.Get(nodeComponent.Attached.Value);
 
-        var nonactiveNodes = GetActiveNodes(artifact); // This seems like its... wrong...
-        var durabilityEffect = MathF.Pow((float)nodeComponent.Durability / nodeComponent.MaxDurability, 2);
+        var durabilityEffect = MathF.Pow((float)nodeComponent.Durability / nodeComponent.MaxDurability == 0 ? 1 : nodeComponent.MaxDurability, 2);
         var durabilityMultiplier = nodeComponent.DurabilityResearchMultiplier - (nodeComponent.DurabilityResearchMultiplier - 1) * durabilityEffect;
 
         var predecessorNodes = GetPredecessorNodes((artifact, artifact), node);
