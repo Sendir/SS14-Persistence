@@ -11,9 +11,4 @@ public sealed partial class XAEChargeBatteryComponent : Component
     /// </summary>
     [DataField("radius")]
     public float Radius = 15f;
-
-    /// <summary>
-    /// The percent increase in charge for nearby batteries
-    /// </summary>
-    public float ChargePercent = 100.0f;
 }

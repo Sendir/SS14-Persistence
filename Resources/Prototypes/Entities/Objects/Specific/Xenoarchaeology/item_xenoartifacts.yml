@@ -53,12 +53,14 @@
     graph: Artifact
     node: done
   - type: XenoArtifact
-    rootEffectsTable: !type:NestedSelector
-      tableId: XenoArtifactDefaultEffectsRootHandheld
-    mainEffectsTable: !type:NestedSelector
-      tableId: XenoArtifactDefaultEffectsMainHandheld
-    deepEffectsTable: !type:NestedSelector
-      tableId: XenoArtifactDefaultEffectsDeepHandheld
+    effectsTable: !type:GroupSelector
+      children:
+      - !type:NestedSelector
+        tableId: XenoArtifactEffectsDefaultTable
+        weight: 54
+      - !type:NestedSelector
+        tableId: XenoArtifactEffectsHandheldOnlyTable
+        weight: 2
 
 - type: entity
   parent: BaseXenoArtifactItem
@@ -67,11 +69,8 @@
   components:
   - type: XenoArtifact
     nodeCount:
-      min: 10
-      max: 18
-    segmentSize:
-      min: 5
-      max: 10
+      min: 9
+      max: 13
 
 - type: entity
   id: ArtifactFragment

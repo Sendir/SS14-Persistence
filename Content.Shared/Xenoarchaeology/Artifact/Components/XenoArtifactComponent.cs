@@ -112,7 +112,7 @@ public sealed partial class XenoArtifactComponent : Component
     /// The total number of nodes that make up this artifact.
     /// </summary>
     [DataField]
-    public MinMax NodeCount = new(12, 18);
+    public MinMax NodeCount = new(10, 16);
 
     /// <summary>
     /// The amount of nodes that go in each segment.
@@ -134,45 +134,12 @@ public sealed partial class XenoArtifactComponent : Component
     public MinMax ScatterPerLayer = new(0, 2);
 
     /// <summary>
-    /// Lower threshold in which nodes will be considered "root"
-    /// </summary>
-    [DataField]
-    public int RootNodeThreshold = 0;
-
-    /// <summary>
-    /// Threshold at which nodes will switch from main to deep.
-    /// </summary>
-    [DataField]
-    public int DeepNodeThreshold = 3;
-
-    /// <summary>
     /// Effects that can be used during this artifact generation.
-    /// Used on nodes of depth at most <see cref="RootNodeThreshold"/> 
     /// </summary>
     [DataField]
-    public EntityTableSelector RootEffectsTable = new NestedSelector
+    public EntityTableSelector EffectsTable = new NestedSelector
     {
-        TableId = "XenoArtifactDefaultEffectsRoot"
-    };
-
-    /// <summary>
-    /// Effects that can be used during this artifact generation.
-    /// Used on nodes between depths <see cref="RootNodeThreshold"/> and <see cref="DeepNodeThreshold"/>  
-    /// </summary>
-    [DataField]
-    public EntityTableSelector MainEffectsTable = new NestedSelector
-    {
-        TableId = "XenoArtifactDefaultEffectsMain"
-    };
-
-    /// <summary>
-    /// Effects that can be used during this artifact generation.
-    /// Used on nodes of depth <see cref="DeepNodeThreshold"/> or deeper
-    /// </summary>
-    [DataField]
-    public EntityTableSelector DeepEffectsTable = new NestedSelector
-    {
-        TableId = "XenoArtifactDefaultEffectsDeep"
+        TableId = "XenoArtifactEffectsDefaultTable"
     };
 
     /// <summary>
