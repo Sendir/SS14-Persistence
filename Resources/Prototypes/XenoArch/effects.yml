@@ -236,7 +236,7 @@
     - type: ToolTileCompatible
     - type: Tool
       qualities:
-      - Pyring
+      - Prying
       speedModifier: 2 # Very powerful to balance out the desire to sell or scrap for points
       useSound: /Audio/Items/crowbar_use.ogg
     
@@ -341,7 +341,7 @@
   id: XenoArtifactToolKnife
   parent: BaseOneTimeXenoArtifactEffect
   description: Gains a sharp edge
-  componens:
+  components:
   - type: XAEApplyComponents
     components:
     - type: ToolTileCompatible
@@ -932,7 +932,7 @@
       spawnDetached: true
       table: !type:AllSelector
         children:
-        - id: XenoArtifactEffectGoodFeelingOre1
+        - id: GoldOre1
           rolls: !type:RangeNumberSelector
             range: 2, 6
 
