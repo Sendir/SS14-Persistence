@@ -52,7 +52,7 @@
   components:
   - type: Sprite
     sprite: _Moffstation/Objects/Misc/Cards/card_black.rsi
-    state: empty
+    state: box
   - type: Appearance
   - type: Item
     size: Small

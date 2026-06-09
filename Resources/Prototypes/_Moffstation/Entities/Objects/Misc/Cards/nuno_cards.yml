@@ -2,7 +2,7 @@
 - type: entity
   parent: BasePlayingCardDeckBox
   id: NunoCardDeckBox
-  name: box of playing cards
+  name: box of nuno playing cards
   suffix: Nuno
   components:
   - type: Sprite
@@ -15,7 +15,7 @@
 - type: entity
   parent: BasePlayingCardDeck
   id: NunoCardDeck
-  name: deck of cards
+  name: deck of nuno cards
   suffix: Nuno
   components:
   - type: PlayingCardDeck
