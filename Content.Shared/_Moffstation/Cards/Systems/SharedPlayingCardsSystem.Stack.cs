@@ -9,7 +9,7 @@ using Robust.Shared.Containers;
 using Robust.Shared.Map;
 using Robust.Shared.Prototypes;
 using static Content.Shared._Moffstation.Cards.Components.PlayingCardStackComponent.Verbs;
-using Content.Shared._Starlight.Abstract.Extensions; // Starlight
+using Content.Shared._Starlight.Abstract.Extensions;
 
 namespace Content.Shared._Moffstation.Cards.Systems;
 
