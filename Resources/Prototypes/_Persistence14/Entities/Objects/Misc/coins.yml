@@ -34,7 +34,7 @@
     sprite: Objects/Misc/Coins/coin_iron.rsi
   - type: PhysicalComposition
     materialComposition:
-      Steel: 100
+      Steel: 10
   - type: Stack
     stackType: StackCoinIron
   - type: StackPrice
@@ -73,7 +73,7 @@
     sprite: Objects/Misc/Coins/coin_silver.rsi
   - type: PhysicalComposition
     materialComposition:
-      Silver: 100
+      Silver: 10
   - type: Stack
     stackType: StackCoinSilver
   - type: StackPrice
@@ -112,7 +112,7 @@
     sprite: Objects/Misc/Coins/coin_gold.rsi
   - type: PhysicalComposition
     materialComposition:
-      Gold: 100
+      Gold: 10
   - type: Stack
     stackType: StackCoinGold
   - type: StackPrice
@@ -151,7 +151,7 @@
     sprite: Objects/Misc/Coins/coin_diamond.rsi
   - type: PhysicalComposition
     materialComposition:
-      DiamondOre: 100
+      Diamond: 10
   - type: Stack
     stackType: StackCoinDiamond
   - type: StackPrice
@@ -190,9 +190,9 @@
     sprite: Objects/Misc/Coins/coin_adamantine.rsi
   - type: PhysicalComposition
     materialComposition:
-      Bananium: 50
-      Silver: 50
-      Gold: 50
+      Bananium: 5
+      Silver: 5
+      Gold: 5
   - type: Stack
     stackType: StackCoinAdamantine
   - type: StackPrice
