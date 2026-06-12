@@ -238,7 +238,7 @@
       qualities:
       - Prying
       speedModifier: 2 # Very powerful to balance out the desire to sell or scrap for points
-      useSound: /Audio/Items/crowbar_use.ogg
+      useSound: /Audio/Items/crowbar.ogg
     
 
 - type: entity
@@ -253,7 +253,7 @@
       qualities:
       - Screwing
       speedModifier: 2 # Very powerful to balance out the desire to sell or scrap for points
-      useSound: /Audio/Items/screwdriver_use.ogg
+      useSound: /Audio/Items/screwdriver.ogg
 
 - type: entity
   id: XenoArtifactToolWrench
@@ -267,7 +267,7 @@
       qualities:
       - Anchoring
       speedModifier: 2 # Very powerful to balance out the desire to sell or scrap for points
-      useSound: /Audio/Items/wrench_use.ogg
+      useSound: /Audio/Items/ratchet.ogg
 
 - type: entity
   id: XenoArtifactToolWirecutter
@@ -281,7 +281,7 @@
       qualities:
       - Cutting
       speedModifier: 2 # Very powerful to balance out the desire to sell or scrap for points
-      useSound: /Audio/Items/wrench_use.ogg
+      useSound: /Audio/Items/ratchet.ogg
 
 - type: entity
   id: XenoArtifactToolJaws
@@ -1605,7 +1605,7 @@
         Caustic: -50
         Poison: -50
         Radiation: -50
-        Genetic: -50
+        Cellular: -50
 
 - type: entity
   id: XenoArtifactHealAll
@@ -1629,7 +1629,7 @@
         Caustic: -50
         Poison: -50
         Radiation: -50
-        Genetic: -50
+        Cellular: -50
 
 - type: entity
   id: XenoArtifactTesla
