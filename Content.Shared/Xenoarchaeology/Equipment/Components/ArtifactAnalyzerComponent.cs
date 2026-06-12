@@ -14,6 +14,7 @@ public sealed partial class ArtifactAnalyzerComponent : Component
     /// <summary>
     /// How long it takes to analyze an artifact
     /// </summary>
+    /// Hi!
     [DataField]
     public TimeSpan AnalysisDuration = TimeSpan.FromSeconds(30);
 
