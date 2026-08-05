@@ -10,7 +10,7 @@
   result: SignalTrigger
   unlockUses: 4
 
-- type: latheRecipe 
+- type: latheRecipe
   parent: BasePartRecipe
   id: VoiceTrigger
   result: VoiceTrigger
@@ -281,3 +281,10 @@
     Copper: 300
     Plastic: 100
     Glass: 100
+
+# _Persistence14 content
+- type: latheRecipe
+  parent: BasePartRecipe
+  id: PlushieSoundActivator
+  result: PlushieSoundActivator
+  unlockUses: 4

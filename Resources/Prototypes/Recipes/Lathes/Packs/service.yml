@@ -82,6 +82,7 @@
   recipes:
   - SynthesizerInstrument
   - PushHorn
+  - PlushieSoundActivator # _Persistence14 content
 
 - type: latheRecipePack
   id: ServiceBoards
