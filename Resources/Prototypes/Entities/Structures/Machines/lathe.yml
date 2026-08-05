@@ -141,6 +141,7 @@
     - ElectronicsStatic
     - CassetteTape
     - ReligionStatic
+    - HydroponicsStatic
   - type: EmagLatheRecipes
     emagStaticPacks:
     - SecurityAmmoStatic
@@ -217,6 +218,10 @@
     - Equipment
     - Hardsuits
     - PaperworkDynamic
+    # Moffstation - Start - Modular HUDs
+    - ModularHudFrames
+    - ModularHudModules
+    # Moffstation - End
   - type: EmagLatheRecipes
     emagDynamicPacks:
     - SecurityAmmo
@@ -408,6 +413,11 @@
     - SecurityWeapons
     - SecurityDisablers
     - SecurityHardsuits
+    # Moffstation - Start - Modular HUDs
+    - ModularHudFrames
+    - SecurityModularHudFrames
+    - SecurityModularHudModules
+    # Moffstation - End
   - type: EmagLatheRecipes
     emagStaticPacks:
     - SyndicateAmmoStatic
@@ -487,6 +497,10 @@
     dynamicPacks:
     - MedicalHardsuits
     - Chemistry
+    # Moffstation - Start - Modular HUDs
+    - ModularHudFrames
+    - MedicalModularHudModules
+    # Moffstation - End
   - type: Machine
     board: MedicalTechFabCircuitboard
   - type: StealTarget
@@ -541,11 +555,12 @@
     - EngineeringHardhatsStatic # Persi14
     - CivilianBags
     - CommandBags
-  - type: EmagLatheRecipes
-    emagStaticPacks:
     - ClothingSyndie
     - ContrabandBags
     - CentralCommandBags
+    - HandyFlags
+    - Bandanas
+    - PouchesPack
   - type: MaterialStorage
     whitelist: *StandardMaterialWhitelist
   - type: OreSiloClient
@@ -572,6 +587,7 @@
     runningState: building
     staticPacks:
     - Plushies
+    - LizardPlushies
   - type: MaterialStorage
     whitelist: *StandardMaterialWhitelist
   - type: OreSiloClient
@@ -789,6 +805,39 @@
     - FloorMarbleTilesStatic
     dynamicPacks:
     - FauxTiles
+  - type: MaterialStorage
+    whitelist: *StandardMaterialWhitelist
+  - type: OreSiloClient
+
+# Persistence 14
+- type: entity
+  id: SolarLegionTechFab
+  parent: BaseLatheLube
+  name: solar legion techfab
+  description: Contains a variety of recipes for proprietary Solar Legion equipment. It has an alert that pops up warning the user of improper usage.
+  components:
+  - type: Sprite
+    sprite: Structures/Machines/techfab.rsi
+    layers:
+    - state: icon
+      map: ["enum.LatheVisualLayers.IsRunning"]
+    - state: solarlegion
+    - state: unlit
+      shader: unshaded
+      map: ["enum.PowerDeviceVisualLayers.Powered"]
+    - state: inserting
+      map: ["enum.MaterialStorageVisualLayers.Inserting"]
+    - state: panel
+      map: ["enum.WiresVisualLayers.MaintenancePanel"]
+  - type: Machine
+    board: SolarLegionTechFabCircuitboard
+  - type: Lathe
+    idleState: icon
+    runningState: icon
+    unlitIdleState: unlit
+    unlitRunningState: unlit-building
+    staticPacks:
+    - SOLEquipment
   - type: MaterialStorage
     whitelist: *StandardMaterialWhitelist
   - type: OreSiloClient

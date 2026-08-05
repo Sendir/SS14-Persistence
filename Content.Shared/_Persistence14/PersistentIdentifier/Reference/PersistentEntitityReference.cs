@@ -1,46 +1,23 @@
+using Robust.Shared.Serialization;
+
 namespace Content.Shared._Persistence14.PersistentIdentifier.Reference;
 
-[DataDefinition]
-public partial struct PersistentEntityReference
+[DataDefinition, NetSerializable, Serializable]
+public partial record struct PersistentEntityReference
 {
-    [DataField(readOnly: true), ViewVariables(VVAccess.ReadOnly)]
-    public string TargetId = PersistentIdentifierSystem.EmptyId;
+    [DataField("targetId", readOnly: true)] private string? _targetId;
+    public string TargetId => _targetId ?? PersistentIdentifierSystem.EmptyId;
 
-    [ViewVariables(VVAccess.ReadOnly)]
-    private Entity<PersistentIdentifierComponent>? _cachedEntity = null;
-
-    public PersistentEntityReference() { }
-
-    /// <summary>
-    /// Attempts to resolve the reference into an entity with a matching ID.
-    /// </summary>
-    /// <returns>True if the reference succesfully resolves into an entity, otherwise false.</returns>
-    public bool TryResolve(PersistentIdentifierSystem pid, out Entity<PersistentIdentifierComponent> entity, ISawmill? sawmill = null)
+    public PersistentEntityReference()
     {
-        if (sawmill is { }) sawmill.Info("Attempting to resolve ID reference.");
-        if (_cachedEntity is { } cached && cached.Comp.Id == TargetId)
-        {
-            entity = cached;
-            if (sawmill is { }) sawmill.Info("Cached entity found, returning.");
-            return true;
-        }
-        if (!pid.TryFetchId(TargetId, out entity, sendLogs: true))
-        {
-            return false;
-        }
-        if (entity.Comp.Id != TargetId)
-        {
-            if (sawmill is { }) sawmill.Info($"Fetched ID does not match target id... somehow (Expected:{TargetId}, Actual: {entity.Comp.Id}).");
-            return false;
-        }
+        _targetId = null;
+    }
 
-        _cachedEntity = entity;
-        if (sawmill is { }) sawmill.Info("Entity cached and valid.");
-        return true;
-    }
-    public void Reset()
+    public PersistentEntityReference(string targetId)
     {
-        TargetId = PersistentIdentifierSystem.EmptyId;
-        _cachedEntity = null;
+        _targetId = targetId;
     }
-}
+
+    public static implicit operator PersistentEntityReference(string targetId) => new(targetId);
+    public static implicit operator string(PersistentEntityReference reference) => reference.TargetId;
+};

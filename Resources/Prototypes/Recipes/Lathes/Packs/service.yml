@@ -65,7 +65,18 @@
   - BibleNanoTrasen
   - BibleHonk
   - BibleRatvar
+  - BibleEmbrace
 
+
+- type: latheRecipePack
+  id: HydroponicsStatic
+  recipes:
+  - HydroponicsToolMiniHoe
+  - HydroponicsToolScythe
+  - HydroponicsToolHatchet
+  - HydroponicsToolSpade
+  - HydroponicsToolClippers
+  - PlantAnalyzer
 
 ## Dynamic
 
@@ -87,6 +98,7 @@
 - type: latheRecipePack
   id: ServiceBoards
   recipes:
+  - RequisitionsConsoleCircuitboard # _Persistence14: requisitions console (T2 Requisitions Logistics)
   - BiofabricatorMachineCircuitboard
   - FatExtractorMachineCircuitboard
   - HydroponicsTrayMachineCircuitboard # roundstart gear being unlocked roundstart when

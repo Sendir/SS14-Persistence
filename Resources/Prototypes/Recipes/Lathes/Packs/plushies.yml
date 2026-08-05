@@ -9,12 +9,7 @@
   - PlushieRouny
   - PlushieLamp
   - PlushieArachind
-  - PlushieLizard
   - PlushieExperiment
-  - PlushieRainbowLizard
-  - PlushieLizardMirrored
-  - PlushieSpaceLizard
-  - PlushieLizardInversed
   - PlushieDiona
   - PlushieSharkBlue
   - PlushieSharkPink
@@ -40,7 +35,58 @@
   - PlushieAna
   - PlushieKamryn
   - PlushieCade
+  - PlushieIsolde
+  - PlushieHuna
+  - PlushieHelena
+  - PlushieMadeline
   - ToyIan
   - ToyAmongPequeno
 
 
+- type: latheRecipePack
+  id: LizardPlushies
+  recipes:
+  - PlushieLizard
+  - PlushieRainbowLizard
+  - PlushieLizardMirrored
+  - PlushieSpaceLizard
+  - PlushieLizardInversed
+  - PlushieDies
+  - WehAtmos
+  - WehBar
+  - WehBot
+  - WehCap
+  - WehCargo
+  - WehChap
+  - WehChef
+  - WehChem
+  - WehCE
+  - WehCMO
+  - WehClown
+  - WehDet
+  - WehHoP
+  - WehHoS
+  - WehJani
+  - WehLaw
+  - WehLib
+  - WehMed
+  - WehMI
+  - WehMime
+  - WehMusic
+  - WehPara
+  - WehTide
+  - WehPsyc
+  - WehQM
+  - WehReport
+  - WehRA
+  - WehRD
+  - WehSalv
+  - WehSci
+  - WehCadet
+  - WehSec
+  - WehService
+  - WehEngi
+  - WehTA
+  - WehWard
+  - WehZoo
+  - MULTIWEH

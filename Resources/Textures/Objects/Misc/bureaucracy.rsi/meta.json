@@ -7,13 +7,7 @@
     "y": 32
   },
   "states": [
-	
-    {
-      "name": "invoicepaid"
-    },
-    {
-      "name": "invoiceunpaid"
-    },
+
     {
       "name": "acquisition_form"
     },
@@ -249,6 +243,9 @@
     },
     {
       "name": "paper_stamp-rd-SOL"
+    },
+    {
+      "name": "paper_stamp-cos-SOL"
     },
     {
       "name": "signature"

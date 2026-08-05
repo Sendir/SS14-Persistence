@@ -270,13 +270,17 @@
     lowPressureMultiplier: 1000
   - type: Armor
     modifiers:
-      coefficients:
-        Blunt: 0.8
-        Slash: 0.8
+      coefficients: # Buffed for Persistence 14
+        Blunt: 0.75
+        Slash: 0.75
         Piercing: 0.7
+        Heat: 0.85
+        Caustic: 0.8
+  - type: ExplosionResistance # Added for Persistence 14
+    damageCoefficient: 0.75
   - type: ClothingSpeedModifier
-    walkModifier: 0.65
-    sprintModifier: 0.65
+    walkModifier: 0.8
+    sprintModifier: 0.8
   - type: HeldSpeedModifier
   - type: ToggleableClothing
     clothingPrototype: ClothingHeadHelmetHardsuitBrigmedic
