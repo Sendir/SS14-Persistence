@@ -3,7 +3,6 @@ using Content.Server.Chemistry.EntitySystems;
 using Content.Server.Gravity;
 using Content.Server.Popups;
 using Content.Shared.CCVar;
-using Content.Shared.Chemistry.Components;
 using Content.Shared.Chemistry.EntitySystems;
 using Content.Shared.FixedPoint;
 using Content.Shared.Fluids;
@@ -135,13 +134,7 @@ public sealed class SpraySystem : SharedSpraySystem
         var threeQuarters = diffNorm * 0.75f;
         var quarter = diffNorm * 0.25f;
 
-        // When opted in, the amount sprayed per use is player-configurable via the SolutionTransfer
-        // ("set transfer amount" context verb); otherwise it uses the SprayComponent's fixed amount.
-        var transferAmount = entity.Comp.TransferAmount;
-        if (entity.Comp.UseSolutionTransferAmount && TryComp<SolutionTransferComponent>(entity, out var solutionTransfer))
-            transferAmount = solutionTransfer.TransferAmount;
-
-        var amount = Math.Max(Math.Min((solution.Volume / transferAmount).Int(), entity.Comp.VaporAmount), 1);
+        var amount = Math.Max(Math.Min((solution.Volume / entity.Comp.TransferAmount).Int(), entity.Comp.VaporAmount), 1);
         var spread = entity.Comp.VaporSpread / amount;
 
         for (var i = 0; i < amount; i++)
@@ -157,7 +150,7 @@ public sealed class SpraySystem : SharedSpraySystem
             if (distance > entity.Comp.SprayDistance)
                 target = sprayerMapPos.Offset(diffNorm * entity.Comp.SprayDistance);
 
-            var adjustedSolutionAmount = transferAmount / entity.Comp.VaporAmount;
+            var adjustedSolutionAmount = entity.Comp.TransferAmount / entity.Comp.VaporAmount;
             var newSolution = _solutionContainer.SplitSolution(soln.Value, adjustedSolutionAmount);
 
             if (newSolution.Volume <= FixedPoint2.Zero)
