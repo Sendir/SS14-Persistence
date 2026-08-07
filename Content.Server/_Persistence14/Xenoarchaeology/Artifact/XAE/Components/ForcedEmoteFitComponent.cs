@@ -6,7 +6,7 @@ namespace Content.Server.Xenoarchaeology.Artifact.XAE.Components;
 
 /// <summary>
 /// Tracks an ongoing forced-emote "fit" applied by <see cref="XAEForcedEmoteComponent"/>. Holds the
-/// AutoEmote to stop and when the fit ends, at which point both are removed.
+/// AutoEmote to stop and when the fit ends, at which point both are removed as they are pointless.
 /// </summary>
 [RegisterComponent, Access(typeof(XAEForcedEmoteSystem))]
 public sealed partial class ForcedEmoteFitComponent : Component
