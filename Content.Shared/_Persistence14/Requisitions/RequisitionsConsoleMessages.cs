@@ -9,6 +9,21 @@ public enum RequisitionsConsoleUiKey : byte
 }
 
 /// <summary>
+/// Fridge catalogue items reuse the console's string-<c>RecipeId</c> plumbing (cart, fees, cost preview) via a
+/// synthetic id <c>"$fridge:&lt;name&gt;"</c>, keeping them in a separate namespace from real lathe recipe ids.
+/// </summary>
+public static class RequisitionFridge
+{
+    public const string Prefix = "$fridge:";
+
+    public static string Id(string name) => Prefix + name;
+
+    public static bool IsFridge(string recipeId) => recipeId.StartsWith(Prefix, StringComparison.Ordinal);
+
+    public static string Name(string recipeId) => IsFridge(recipeId) ? recipeId[Prefix.Length..] : recipeId;
+}
+
+/// <summary>
 /// Everything the console UI needs, computed server-side and pushed to the client. The cart itself lives
 /// entirely on the client; only the final <see cref="RequisitionCheckoutMessage"/> is sent back.
 /// </summary>
@@ -52,6 +67,25 @@ public sealed class RequisitionsConsoleState : BoundUserInterfaceState
 
     /// <summary>Whether printed invoices itemise each line's materials/fees, or just show "item — cost" and a total.</summary>
     public bool DetailedInvoice = true;
+
+    /// <summary>Operator-set fridge item prices, keyed by item name (fridge config tab).</summary>
+    public Dictionary<string, int> FridgeItemPrices = new();
+
+    /// <summary>Operator-defined fees applied to fridge items (fridge config tab).</summary>
+    public List<RequisitionFee> FridgeFees = new();
+
+    /// <summary>
+    /// Incremented server-side each time an invoice is freshly slotted and successfully parsed into a cart. The
+    /// client applies <see cref="LoadedOrder"/> once per new token, so the many background state refreshes don't
+    /// repeatedly clobber the client-side cart.
+    /// </summary>
+    public int LoadedOrderToken;
+
+    /// <summary>The cart parsed from the most recently slotted invoice, applied by the client on a new token.</summary>
+    public List<RequisitionCartItem> LoadedOrder = new();
+
+    /// <summary>Whether an invoice is currently sitting in the console's invoice slot.</summary>
+    public bool InvoiceSlotted;
 }
 
 /// <summary>One catalogue line: a single recipe, merged across every machine that can print it.</summary>
@@ -75,6 +109,15 @@ public sealed class RequisitionCatalogueEntry
 
     /// <summary>How many linked machines can print this (for display; duplicates are squashed to one line).</summary>
     public int SourceCount;
+
+    /// <summary>True when this line is a smart-fridge item rather than a printable lathe recipe.</summary>
+    public bool FromFridge;
+
+    /// <summary>For a fridge item, how many are currently stocked across the linked fridges. Null for lathe items.</summary>
+    public int? Available;
+
+    /// <summary>For a fridge item, the operator-set unit price (fridge items carry no material cost).</summary>
+    public int FridgeUnitPrice;
 }
 
 /// <summary>A machine that can be linked to the console (shown in the config tab).</summary>
@@ -137,6 +180,26 @@ public sealed class RequisitionCheckoutMessage : BoundUserInterfaceMessage
 [Serializable, NetSerializable]
 public sealed class RequisitionCancelMessage : BoundUserInterfaceMessage
 {
+}
+
+/// <summary>
+/// Print the invoice this cart <b>would</b> generate, without dispatching any prints or dispensing anything. The
+/// resulting paper can be slotted back into a console to reload the cart. Always prints regardless of the
+/// checkout tab's "print invoice" toggle.
+/// </summary>
+[Serializable, NetSerializable]
+public sealed class RequisitionPreviewInvoiceMessage : BoundUserInterfaceMessage
+{
+    public List<RequisitionCartItem> Items;
+    public string InvoiceTitle;
+    public int? OverridePrice;
+
+    public RequisitionPreviewInvoiceMessage(List<RequisitionCartItem> items, string invoiceTitle, int? overridePrice)
+    {
+        Items = items;
+        InvoiceTitle = invoiceTitle;
+        OverridePrice = overridePrice;
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -209,4 +272,42 @@ public sealed class RequisitionSetDetailedInvoiceMessage : BoundUserInterfaceMes
 [Serializable, NetSerializable]
 public sealed class RequisitionEjectFlatpacksMessage : BoundUserInterfaceMessage
 {
+}
+
+/// <summary>Set (or clear, when price &lt; 0) the manual price of a smart-fridge item, keyed by item name.</summary>
+[Serializable, NetSerializable]
+public sealed class RequisitionSetFridgePriceMessage : BoundUserInterfaceMessage
+{
+    public string Item;
+    public int Price;
+
+    public RequisitionSetFridgePriceMessage(string item, int price)
+    {
+        Item = item;
+        Price = price;
+    }
+}
+
+/// <summary>Add a new fridge fee or edit an existing one (matched by <see cref="RequisitionFee.Id"/>).</summary>
+[Serializable, NetSerializable]
+public sealed class RequisitionSetFridgeFeeMessage : BoundUserInterfaceMessage
+{
+    public RequisitionFee Fee;
+
+    public RequisitionSetFridgeFeeMessage(RequisitionFee fee)
+    {
+        Fee = fee;
+    }
+}
+
+/// <summary>Remove a fridge fee by id.</summary>
+[Serializable, NetSerializable]
+public sealed class RequisitionRemoveFridgeFeeMessage : BoundUserInterfaceMessage
+{
+    public string Id;
+
+    public RequisitionRemoveFridgeFeeMessage(string id)
+    {
+        Id = id;
+    }
 }

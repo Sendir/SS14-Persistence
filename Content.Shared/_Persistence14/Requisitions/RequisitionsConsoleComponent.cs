@@ -17,6 +17,22 @@ namespace Content.Shared._Persistence14.Requisitions;
 [Access(typeof(SharedRequisitionsConsoleSystem))]
 public sealed partial class RequisitionsConsoleComponent : Component
 {
+    /// <summary>The item slot (see the entity's <c>ItemSlots</c>) that accepts an invoice to reload its cart.</summary>
+    public const string InvoiceSlotId = "requisitions-invoice-slot";
+
+    #region Invoice loading (server-side runtime state)
+
+    /// <summary>
+    /// Bumped each time an invoice is slotted and successfully parsed. Pushed to the client via BUI state so the
+    /// cart is reloaded exactly once per slotted invoice, not on every background refresh.
+    /// </summary>
+    public int LoadedOrderToken;
+
+    /// <summary>The cart parsed from the currently slotted invoice, surfaced to the client through the state.</summary>
+    public List<RequisitionCartItem> LoadedOrder = new();
+
+    #endregion
+
     #region Linking
 
     /// <summary>
@@ -53,6 +69,25 @@ public sealed partial class RequisitionsConsoleComponent : Component
     /// <summary>Fallback price for a priceable material not listed in <see cref="DefaultMaterialPrices"/>.</summary>
     [DataField]
     public int FallbackMaterialPrice;
+
+    /// <summary>
+    /// Operator-set price for a smart-fridge item, keyed by the item's identity name. Fridge items carry no
+    /// material cost, so their whole price is set here by hand on the fridge config tab.
+    /// </summary>
+    [DataField]
+    public Dictionary<string, int> FridgeItemPrices = new();
+
+    /// <summary>Price charged for a fridge item whose name has no entry in <see cref="FridgeItemPrices"/>.</summary>
+    [DataField]
+    public int FridgeFallbackPrice;
+
+    /// <summary>
+    /// Extra named charges applied to fridge items. Kept separate from <see cref="Fees"/> so the fridge config
+    /// tab is fully isolated from the raw-material config tab. Scope/assignment works the same way, keyed by the
+    /// fridge item's synthetic recipe id (<c>"$fridge:&lt;name&gt;"</c>).
+    /// </summary>
+    [DataField]
+    public List<RequisitionFee> FridgeFees = new();
 
     /// <summary>
     /// When true, a printed invoice itemises each line's materials and fees plus per-order totals. When false,
