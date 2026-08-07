@@ -4,6 +4,7 @@ requisitions-title = Requisitions Console
 requisitions-tab-checkout = Checkout
 requisitions-tab-config = Pricing & fees
 requisitions-tab-config-locked = Pricing & fees (access)
+requisitions-tab-fridge = Fridge items
 
 # Header
 requisitions-linked-count = {$count} machines linked
@@ -22,6 +23,9 @@ requisitions-cart-count = {$count ->
 requisitions-cart-empty = Cart is empty. Click items on the left to add them.
 requisitions-add = + add
 requisitions-prints-remaining = {$count} left
+requisitions-available = {$count} available
+requisitions-catalogue-section-fabricators = Fabricators
+requisitions-catalogue-section-fridge = Smart fridge
 requisitions-flatpack = flatpack
 requisitions-flatpack-note = +{$percent}% material, adds flatpack fee
 
@@ -45,6 +49,10 @@ requisitions-checkout-button = Confirm & print
 requisitions-cancel-button = Cancel — return my sheets
 requisitions-processing = PROCESSING A CHECKOUT — please wait
 requisitions-print-invoice = Print invoice
+requisitions-preview-invoice = Print invoice preview
+requisitions-preview-invoice-tooltip = Prints the invoice this cart would generate, without ordering or printing anything. Slot the paper back in later to reload this cart.
+requisitions-preview-done = Invoice preview printed.
+requisitions-preview-partial = Invoice preview printed. Some items are unknown to this console.
 requisitions-invoice-default-title = Requisition Invoice
 requisitions-invoice-items = ITEMS
 requisitions-invoice-total-header = TOTAL
@@ -54,6 +62,7 @@ requisitions-fail-no-machine = No linked machine can print this.
 requisitions-fail-no-materials = Not enough materials to print this.
 requisitions-fail-no-flatpacker = No flatpacker is linked to pack this.
 requisitions-fail-unknown = Unknown item.
+requisitions-fail-out-of-stock = Out of stock in the linked fridge.
 requisitions-fail-error = Could not be processed.
 requisitions-checkout-done = Order printed.
 requisitions-checkout-partial = Order printed. Some items were skipped — not enough materials.
@@ -101,6 +110,16 @@ requisitions-dialog-fee-name = Fee name
 requisitions-dialog-price = Price
 requisitions-dialog-assign-title = {$name} — applies to
 requisitions-dialog-assign-all = Apply to every item on the checkout
+
+# Fridge config tab
+requisitions-config-fridge-header = Smart fridge item pricing
+requisitions-config-fridge-prices = Fridge items (price per unit)
+requisitions-config-fridge-fees = Fridge fees
+requisitions-fridge-none = No smart fridge linked, or it holds no items.
+requisitions-fridge-unit-price = Unit price
+
+# Invoice slot
+requisitions-invoice-slot-name = Invoice
 
 # Access
 requisitions-access-denied = Access denied.

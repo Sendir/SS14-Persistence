@@ -5,6 +5,7 @@ using Content.Shared.Lathe;
 using Content.Shared.Materials;
 using Content.Shared.Materials.OreSilo;
 using Content.Shared.Power.EntitySystems;
+using Content.Shared.SmartFridge;
 using Robust.Shared.Prototypes;
 
 namespace Content.Shared._Persistence14.Requisitions;
@@ -33,6 +34,9 @@ public abstract class SharedRequisitionsConsoleSystem : EntitySystem
         SubscribeLocalEvent<RequisitionsConsoleComponent, RequisitionSetFeeMessage>(OnSetFee);
         SubscribeLocalEvent<RequisitionsConsoleComponent, RequisitionRemoveFeeMessage>(OnRemoveFee);
         SubscribeLocalEvent<RequisitionsConsoleComponent, RequisitionSetDetailedInvoiceMessage>(OnSetDetailedInvoice);
+        SubscribeLocalEvent<RequisitionsConsoleComponent, RequisitionSetFridgePriceMessage>(OnSetFridgePrice);
+        SubscribeLocalEvent<RequisitionsConsoleComponent, RequisitionSetFridgeFeeMessage>(OnSetFridgeFee);
+        SubscribeLocalEvent<RequisitionsConsoleComponent, RequisitionRemoveFridgeFeeMessage>(OnRemoveFridgeFee);
         SubscribeLocalEvent<RequisitionsConsoleComponent, ComponentShutdown>(OnShutdown);
 
         Subs.BuiEvents<RequisitionsConsoleComponent>(RequisitionsConsoleUiKey.Key, subs =>
@@ -90,10 +94,12 @@ public abstract class SharedRequisitionsConsoleSystem : EntitySystem
 
     public bool IsLinkable(EntityUid machine)
     {
-        // Lathes print, flatpackers pack, and an ore silo supplies the shared "department stock" readout.
+        // Lathes print, flatpackers pack, an ore silo supplies the shared "department stock" readout, and a
+        // smart fridge contributes its stored items to the catalogue.
         return _latheQuery.HasComp(machine)
                || HasComp<FlatpackCreatorComponent>(machine)
-               || HasComp<OreSiloComponent>(machine);
+               || HasComp<OreSiloComponent>(machine)
+               || HasComp<SmartFridgeComponent>(machine);
     }
 
     /// <summary>
@@ -249,6 +255,52 @@ public abstract class SharedRequisitionsConsoleSystem : EntitySystem
             return;
 
         ent.Comp.DetailedInvoice = args.Detailed;
+        UpdateUi(ent, args.Actor);
+    }
+
+    private void OnSetFridgePrice(Entity<RequisitionsConsoleComponent> ent, ref RequisitionSetFridgePriceMessage args)
+    {
+        if (!HasConfigAccess(ent, args.Actor))
+            return;
+
+        if (args.Price < 0)
+            ent.Comp.FridgeItemPrices.Remove(args.Item);
+        else
+            ent.Comp.FridgeItemPrices[args.Item] = args.Price;
+
+        UpdateUi(ent, args.Actor);
+    }
+
+    private void OnSetFridgeFee(Entity<RequisitionsConsoleComponent> ent, ref RequisitionSetFridgeFeeMessage args)
+    {
+        if (!HasConfigAccess(ent, args.Actor))
+            return;
+
+        var incoming = args.Fee;
+        var existing = ent.Comp.FridgeFees.FirstOrDefault(f => f.Id == incoming.Id);
+        if (existing != null)
+        {
+            existing.Name = incoming.Name;
+            existing.Price = incoming.Price;
+            existing.Type = incoming.Type;
+            existing.Scope = incoming.Scope;
+            existing.Recipes = incoming.Recipes;
+        }
+        else
+        {
+            ent.Comp.FridgeFees.Add(incoming);
+        }
+
+        UpdateUi(ent, args.Actor);
+    }
+
+    private void OnRemoveFridgeFee(Entity<RequisitionsConsoleComponent> ent, ref RequisitionRemoveFridgeFeeMessage args)
+    {
+        if (!HasConfigAccess(ent, args.Actor))
+            return;
+
+        var id = args.Id;
+        ent.Comp.FridgeFees.RemoveAll(f => f.Id == id);
         UpdateUi(ent, args.Actor);
     }
 

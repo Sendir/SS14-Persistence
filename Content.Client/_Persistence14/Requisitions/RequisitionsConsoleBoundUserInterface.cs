@@ -19,6 +19,7 @@ public sealed class RequisitionsConsoleBoundUserInterface(EntityUid owner, Enum 
         _menu.SetEntity(Owner);
 
         _menu.OnCheckout += (items, printInvoice, title, overridePrice) => SendMessage(new RequisitionCheckoutMessage(items, printInvoice, title, overridePrice));
+        _menu.OnPreviewInvoice += (items, title, overridePrice) => SendMessage(new RequisitionPreviewInvoiceMessage(items, title, overridePrice));
         _menu.OnCancel += () => SendMessage(new RequisitionCancelMessage());
         _menu.OnToggleLink += netEnt => SendMessage(new ToggleRequisitionLinkMessage(netEnt));
         _menu.OnSetMaterialPrice += (mat, price) => SendMessage(new RequisitionSetMaterialPriceMessage(mat, price));
@@ -26,6 +27,9 @@ public sealed class RequisitionsConsoleBoundUserInterface(EntityUid owner, Enum 
         _menu.OnRemoveFee += id => SendMessage(new RequisitionRemoveFeeMessage(id));
         _menu.OnEjectFlatpacks += () => SendMessage(new RequisitionEjectFlatpacksMessage());
         _menu.OnSetDetailedInvoice += detailed => SendMessage(new RequisitionSetDetailedInvoiceMessage(detailed));
+        _menu.OnSetFridgePrice += (item, price) => SendMessage(new RequisitionSetFridgePriceMessage(item, price));
+        _menu.OnSetFridgeFee += fee => SendMessage(new RequisitionSetFridgeFeeMessage(fee));
+        _menu.OnRemoveFridgeFee += id => SendMessage(new RequisitionRemoveFridgeFeeMessage(id));
     }
 
     protected override void UpdateState(BoundUserInterfaceState state)
