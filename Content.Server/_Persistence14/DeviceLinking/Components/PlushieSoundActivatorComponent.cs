@@ -19,7 +19,7 @@ public sealed partial class PlushieSoundActivatorComponent : Component
     public int MaxSounds = 10;
 
     /// <summary>
-    /// The plushie this activator is currently wired into, if any.
+    /// The plushie this activator is currently wired into, if any at all.
     /// </summary>
     [ViewVariables]
     public EntityUid? LinkedPlushie;
