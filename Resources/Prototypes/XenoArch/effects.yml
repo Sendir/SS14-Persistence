@@ -407,16 +407,17 @@
 
 # _Persistence14 content
 # Forced-emote effects: on activation, every living mob within `radius` (line of sight ignored) that
-# can perform the emote is made to repeat it for `duration` seconds. The repeat cadence/probability
-# come from the referenced AutoEmote prototype (see _Persistence14/Voice/auto_emotes.yml).
-# To add another, pair a new autoEmote prototype with a copy of one of these (new id + autoEmote).
+# can perform the emote is made to repeat it for `duration` seconds via a forced-emote status effect.
+# The emote cadence/probability come from that status effect entity (see the ForcedEmoteStatusEffect
+# component in _Persistence14/Entities/StatusEffects/forced_emotes.yml). Re-activating just refreshes
+# the timer. To add another, pair a new status effect entity there with a copy of one of these.
 - type: entity
   id: XenoArtifactEffectLaughingFit
   parent: BaseXenoArtifactEffect
   description: Induces uncontrollable laughter in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedLaugh
+    statusEffect: StatusEffectForcedLaugh
     radius: 5
     duration: 10
 
@@ -426,7 +427,7 @@
   description: Induces uncontrollable sighing in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedSigh
+    statusEffect: StatusEffectForcedSigh
     radius: 5
     duration: 10
 
@@ -436,7 +437,7 @@
   description: Induces uncontrollable sneezing in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedSneeze
+    statusEffect: StatusEffectForcedSneeze
     radius: 5
     duration: 10
 
@@ -446,7 +447,7 @@
   description: Induces uncontrollable coughing in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedCough
+    statusEffect: StatusEffectForcedCough
     radius: 5
     duration: 10
 
@@ -456,7 +457,7 @@
   description: Induces uncontrollable whistling in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedWhistle
+    statusEffect: StatusEffectForcedWhistle
     radius: 5
     duration: 10
 
@@ -466,7 +467,7 @@
   description: Induces uncontrollable crying in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedCry
+    statusEffect: StatusEffectForcedCry
     radius: 5
     duration: 10
 
@@ -476,7 +477,7 @@
   description: Induces uncontrollable yawning in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedYawn
+    statusEffect: StatusEffectForcedYawn
     radius: 5
     duration: 10
 
@@ -486,7 +487,7 @@
   description: Induces uncontrollable screaming in nearby minds
   components:
   - type: XAEForcedEmote
-    autoEmote: XenoArchForcedScream
+    statusEffect: StatusEffectForcedScream
     radius: 5
     duration: 10
 # end _Persistence14 content

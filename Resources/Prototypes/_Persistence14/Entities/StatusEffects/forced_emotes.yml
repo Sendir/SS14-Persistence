@@ -1,0 +1,69 @@
+# _Persistence14 content
+# Forced-emote status effects applied by the XAEForcedEmote xeno-artifact effect. While active, the
+# affected mob repeatedly attempts the emote (see ForcedEmoteStatusEffectSystem). Duration and
+# cleanup are handled by the status effect system; parenting MobStatusEffectDebuff means rejuvenate
+# and godmode also clear it. To add another, pair a new entry here with an effect entity in
+# XenoArch/effects.yml.
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedLaugh
+  name: laughing fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Laugh
+
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedSigh
+  name: sighing fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Sigh
+
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedSneeze
+  name: sneezing fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Sneeze
+
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedCough
+  name: coughing fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Cough
+
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedWhistle
+  name: whistling fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Whistle
+
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedCry
+  name: crying fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Crying
+
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedYawn
+  name: yawning fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Yawn
+
+- type: entity
+  parent: MobStatusEffectDebuff
+  id: StatusEffectForcedScream
+  name: screaming fit
+  components:
+  - type: ForcedEmoteStatusEffect
+    emote: Scream
