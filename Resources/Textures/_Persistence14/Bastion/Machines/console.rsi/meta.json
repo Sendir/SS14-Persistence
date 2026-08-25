@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "PLACEHOLDER copied from Space Station 14 computers.rsi. Replace with dedicated Paragon console art (same states/size).",
+  "size": {
+    "x": 32,
+    "y": 32
+  },
+  "states": [
+    {
+      "name": "computer",
+      "directions": 4
+    },
+    {
+      "name": "broken",
+      "directions": 4
+    },
+    {
+      "name": "artifact",
+      "directions": 4,
+      "delays": [
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ],
+        [
+          1,
+          1,
+          1,
+          1,
+          1,
+          1,
+          1
+        ]
+      ]
+    },
+    {
+      "name": "screen_broken",
+      "directions": 4
+    },
+    {
+      "name": "generic_keyboard",
+      "directions": 4
+    },
+    {
+      "name": "generic_panel_open",
+      "directions": 4
+    },
+    {
+      "name": "tech_key",
+      "directions": 4
+    },
+    {
+      "name": "tech_key_off",
+      "directions": 4
+    }
+  ]
+}

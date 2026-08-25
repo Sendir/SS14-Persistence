@@ -22,7 +22,7 @@ public sealed class XAEChargeBatterySystem : BaseXAESystem<XAEChargeBatteryCompo
     {
         _batteryEntities.Clear();
 
-        _lookup.GetEntitiesInRange(args.Coordinates, ent.Comp.Radius, _batteryEntities);
+        _lookup.GetEntitiesInRange(args.Coordinates, ent.Comp.Radius * (args.Scale / 2f), _batteryEntities);
         foreach (var battery in _batteryEntities)
         {
             if (ent.Comp.ChargePercent >= 100f) // Skip calculation if charge to full

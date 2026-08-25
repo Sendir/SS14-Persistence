@@ -1,0 +1,288 @@
+# _Persistence14 content: the fixed structures inside a Bastion Ruin - the Paragon Artifact and its
+# analysis pad + console. All three are made indestructible and un-unanchorable at spawn time
+# (see BastionRuinSystem: EnableGodmode + strip Anchorable) and run without power (needsPower: false),
+# since they are "powered by the artifact". Sprites here are placeholders - assume dedicated art later.
+
+# The base centerpiece. Its own native 2x2 RSI. RandomArtifactSprite is deliberately NOT inherited (we
+# parent the raw bases, not BaseXenoArtifactStructure) so the appearance stays fixed. Defense variants
+# below override the sprite + add a defense component; BastionRuinSystem spawns the right variant.
+- type: entity
+  parent: [ BaseStructureDynamic, BaseXenoArtifact ]
+  id: StructureParagonArtifact
+  name: paragon artifact
+  description: The greatest relic of a vanished people, dense with dormant, unknowable power.
+  suffix: Bastion
+  components:
+  # Native 2x2 (64x64) placeholder RSI - no YAML scaling, so dedicated art drops in at the same size.
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: _Persistence14/Bastion/Artifacts/paragon.rsi
+    noRot: true
+    layers:
+    - state: base
+      map: [ "enum.ArtifactsVisualLayers.Base" ]
+    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
+    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
+    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
+    - state: unlocking
+      map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
+      visible: false
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: artifact-activation
+      scale: 2, 2
+      map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
+      visible: false
+  - type: Transform
+    noRot: true
+  # Static + positioned precisely at spawn (NOT tile-anchored, which snaps to a single tile and would
+  # break a clean 2x2). Immovability comes from Static; un-unanchoring from stripping Anchorable in code.
+  - type: Physics
+    bodyType: Static
+  # A hard 2x2 box (bounds -1..1 = 2 tiles) so the Paragon physically blocks a 2x2, like a wall.
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-1,-1,1,1"
+        density: 190
+        mask:
+        - Impassable
+        - HighImpassable
+        - MidImpassable
+        layer:
+        - Impassable
+        - MidImpassable
+        - LowImpassable
+        - BulletImpassable
+  # Effect pools without the self-teleport effect (a fixed structure must never move itself). Each
+  # defense variant below may override these to define its own effects/weights.
+  - type: XenoArtifact
+    suppressed: true
+    effectScale: 10 # the Paragon's effects are x10 (see per-effect scaling in the XAE systems)
+    rootEffectsTable: !type:NestedSelector
+      tableId: BastionParagonEffectsRoot
+    mainEffectsTable: !type:NestedSelector
+      tableId: BastionParagonEffectsMain
+    deepEffectsTable: !type:NestedSelector
+      tableId: BastionParagonEffectsDeep
+    nodeCount:
+      min: 13
+      max: 26
+    segmentSize:
+      min: 8
+      max: 13
+    nodesPerSegmentLayer:
+      min: 1
+      max: 4
+    scatterPerLayer:
+      min: 0
+      max: 4
+  - type: ItemSlots
+    slots:
+      paragon_key:
+        name: paragon-key-slot
+        insertOnInteract: true
+        ejectOnInteract: false
+        whitelist:
+          components:
+          - ParagonArtifactKey
+  - type: ParagonArtifact
+  # Drives the unlock-glow / activation-flash sprite layers (the Paragon has no RandomArtifactSprite, so
+  # the stock artifact visualizer never toggles them). Layers are mapped in the Sprite above.
+  - type: BastionArtifactVisuals
+  # Lets the console's locked screen render this Paragon's key sprite live (set when the key is bound).
+  - type: ParagonKeyDisplay
+  # How much this artifact's extracted points are worth. Lives on the artifact, not the console.
+  - type: ArtifactPointMultiplier
+    multiplier: 20
+  # Defense-pulse clock. pulseInterval = guaranteed max time between pulses. Bands are matched by
+  # seconds-until-next-pulse and drive the console readout; a band with earlyPulseChance can also
+  # discharge early while the timer sits in it (per-second chance). Tune all of this here.
+  - type: BastionPulse
+    # TESTING cadence: each cycle rolls a random 10-30s interval (pulseInterval is the fallback/guaranteed
+    # max). Retune upward before shipping.
+    pulseInterval: 30
+    pulseIntervalMin: 10
+    pulseIntervalMax: 30
+    activationRange: 100
+    bands:
+    - descriptor: bastion-pulse-distant   # 20s+ out
+      from: 20
+    - descriptor: bastion-pulse-near      # 10-20s out
+      from: 10
+      to: 20
+    - descriptor: bastion-pulse-imminent  # under 10s
+      from: 0
+      to: 10
+
+# 2x2 analysis pad the Paragon sits on. Placeholder sprite (scaled analyzer art). CurrentArtifact is
+# wired to the Paragon in code at spawn, since a fixed structure never triggers the ItemPlacer path.
+- type: entity
+  parent: MachineArtifactAnalyzer
+  id: MachineParagonAnalyzerPad
+  name: paragon analysis pad
+  suffix: Bastion
+  components:
+  # Native 2x2 (64x64) placeholder RSI - no YAML scaling, so dedicated art drops in at the same size.
+  - type: Sprite
+    noRot: true
+    sprite: _Persistence14/Bastion/Machines/analyzer_pad.rsi
+    drawdepth: HighFloorObjects
+    layers:
+    - state: icon
+    - state: unshaded
+      shader: unshaded
+      map: ["enum.PowerDeviceVisualLayers.Powered"]
+  - type: ApcPowerReceiver
+    needsPower: false
+  # Not tile-anchored (positioned precisely at spawn to line up as a clean 2x2 under the Paragon);
+  # stays put because it's Static, and Anchorable is stripped in code.
+  - type: Transform
+    anchored: false
+  # 2x2 to match the artifact. Non-hard - the Paragon on top provides the actual 2x2 blocking.
+  - type: Fixtures
+    fixtures:
+      fix1:
+        shape:
+          !type:PhysShapeAabb
+          bounds: "-1,-1,1,1"
+        hard: false
+        mask:
+        - MachineMask
+
+# The console. Placeholder = the stock analysis console sprite. Extraction-to-disk / locked screen
+# come later; for now it links to the pad and shows the Paragon's graph.
+- type: entity
+  parent: ComputerAnalysisConsole
+  id: MachineParagonAnalysisConsole
+  name: paragon analysis console
+  suffix: Bastion
+  components:
+  - type: ApcPowerReceiver
+    needsPower: false
+  # Extract prints points onto a research disk instead of crediting a server (the ruin has none).
+  # The x20 value lives on the Paragon (ArtifactPointMultiplier), not here.
+  - type: BastionConsole
+  # Its own placeholder sprite folder (copied computer states); swap in dedicated art later.
+  - type: Sprite
+    sprite: _Persistence14/Bastion/Machines/console.rsi
+    layers:
+    - map: ["computerLayerBody"]
+      state: computer
+    - map: ["computerLayerKeyboard"]
+      state: generic_keyboard
+    - map: ["computerLayerScreen"]
+      state: artifact
+    - map: ["computerLayerKeys"]
+      state: tech_key
+    - map: [ "enum.WiresVisualLayers.MaintenancePanel" ]
+      state: generic_panel_open
+
+# --- Paragon variants, one per defense type. Each is the base Paragon with its own placeholder sprite
+# and its defense marker component. The BastionRuinSystem spawns the right one for the ruin's defense. ---
+
+- type: entity
+  parent: StructureParagonArtifact
+  id: StructureParagonArtifactArtifacts
+  suffix: Bastion, Artifacts Defense
+  components:
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: _Persistence14/Bastion/Artifacts/paragon_artifacts.rsi
+    noRot: true
+    layers:
+    - state: base
+      map: [ "enum.ArtifactsVisualLayers.Base" ]
+    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
+    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
+    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
+    - state: unlocking
+      map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
+      visible: false
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: artifact-activation
+      scale: 2, 2
+      map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
+      visible: false
+  - type: BastionDefenseArtifacts
+
+- type: entity
+  parent: StructureParagonArtifact
+  id: StructureParagonArtifactAnomalies
+  suffix: Bastion, Anomalies Defense
+  components:
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: _Persistence14/Bastion/Artifacts/paragon_anomalies.rsi
+    noRot: true
+    layers:
+    - state: base
+      map: [ "enum.ArtifactsVisualLayers.Base" ]
+    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
+    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
+    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
+    - state: unlocking
+      map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
+      visible: false
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: artifact-activation
+      scale: 2, 2
+      map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
+      visible: false
+  - type: BastionDefenseAnomalies
+
+- type: entity
+  parent: StructureParagonArtifact
+  id: StructureParagonArtifactMobs
+  suffix: Bastion, Mobs Defense
+  components:
+  - type: Sprite
+    drawdepth: SmallObjects
+    sprite: _Persistence14/Bastion/Artifacts/paragon_mobs.rsi
+    noRot: true
+    layers:
+    - state: base
+      map: [ "enum.ArtifactsVisualLayers.Base" ]
+    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
+    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
+    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
+    - state: unlocking
+      map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
+      visible: false
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: artifact-activation
+      scale: 2, 2
+      map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
+      visible: false
+  - type: BastionDefenseMobs
+
+# --- Defense A payload: the artifacts the Artifacts-defense Paragon flings out. A structure artifact
+# (parent ComplexXenoArtifact => non-handheld effect tables, so it can NEVER roll the resync effect and
+# spawn a nested ruin). Dynamic body so the tether can fling it out and reel it in. x3 effect scale, a
+# smaller graph than a normal artifact, and pointed at the Bastion effect pools (no self-movers). ---
+- type: entity
+  parent: ComplexXenoArtifact
+  id: StructureBastionDefenseArtifact
+  name: paragon defense artifact
+  description: A shard of the Paragon's power, spat out to drive off intruders.
+  suffix: Bastion Defense
+  # NOTE: stays a KinematicController mob here (inherited) so it's a valid artifact/mob at rest. The
+  # defense system converts it to a Dynamic prop at spawn (strips the mob-mover comps + sets Dynamic) so
+  # the tether's MouseJoint can physically fling and reel it - see BastionDefenseArtifactsSystem.
+  components:
+  # effectScale + Bastion effect pools only; node counts inherit ComplexXenoArtifact (13-26), so these are
+  # full-size artifacts like any other large in-game artifact.
+  - type: XenoArtifact
+    # Suppressed: the Bastion system fully drives these (unlocks nodes + pulses them directly). Suppression
+    # stops the XAT trigger/unlock machinery from running on them - ambient gas/heat/pressure would otherwise
+    # constantly push them into unlock states, and the unlock graph traversal throws on their transient nodes
+    # during client prediction as they spawn+delete. SetNodeUnlocked / ActivateNode still work while suppressed.
+    suppressed: true
+    effectScale: 3 # defense artifacts fire at x3 (see per-effect scaling in the XAE systems)
+    rootEffectsTable: !type:NestedSelector
+      tableId: BastionParagonEffectsRoot
+    mainEffectsTable: !type:NestedSelector
+      tableId: BastionParagonEffectsMain
+    deepEffectsTable: !type:NestedSelector
+      tableId: BastionParagonEffectsDeep

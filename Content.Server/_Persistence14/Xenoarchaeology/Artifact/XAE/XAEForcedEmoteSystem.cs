@@ -29,10 +29,10 @@ public sealed class XAEForcedEmoteSystem : BaseXAESystem<XAEForcedEmoteComponent
     protected override void OnActivated(Entity<XAEForcedEmoteComponent> ent, ref XenoArtifactNodeActivatedEvent args)
     {
         var comp = ent.Comp;
-        var endTime = _timing.CurTime + comp.Duration;
+        var endTime = _timing.CurTime + comp.Duration * args.Scale;
 
         _entities.Clear();
-        _lookup.GetEntitiesInRange(args.Coordinates, comp.Radius, _entities);
+        _lookup.GetEntitiesInRange(args.Coordinates, comp.Radius * args.Scale, _entities);
         foreach (var mob in _entities)
         {
             // Only living mobs are affected.

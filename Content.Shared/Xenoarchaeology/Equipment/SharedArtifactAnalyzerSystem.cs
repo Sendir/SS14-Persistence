@@ -80,6 +80,19 @@ public abstract class SharedArtifactAnalyzerSystem : EntitySystem
         Dirty(ent);
     }
 
+    /// <summary>
+    /// Directly sets the artifact a pad is analyzing. Used when the artifact is a fixed structure
+    /// sitting on the pad (e.g. the Paragon) rather than an item dropped onto it via ItemPlacer, so it
+    /// can't be picked up by the usual ItemPlacedEvent path.
+    /// </summary>
+    public void SetCurrentArtifact(Entity<ArtifactAnalyzerComponent> ent, EntityUid? artifact)
+    {
+        if (artifact is { } art && !ent.Comp.Artifacts.Contains(art))
+            ent.Comp.Artifacts.Add(art);
+        ent.Comp.CurrentArtifact = artifact;
+        Dirty(ent);
+    }
+
     private void OnMapInit(Entity<AnalysisConsoleComponent> ent, ref MapInitEvent args)
     {
         if (!TryComp<DeviceLinkSourceComponent>(ent, out var source))

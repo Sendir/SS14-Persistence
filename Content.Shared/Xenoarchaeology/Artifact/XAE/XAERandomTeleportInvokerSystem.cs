@@ -1,5 +1,7 @@
 using Content.Shared.Popups;
 using Content.Shared.Xenoarchaeology.Artifact.XAE.Components;
+using Robust.Shared.Physics;
+using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Random;
 using Robust.Shared.Timing;
@@ -21,6 +23,11 @@ public sealed class XAERandomTeleportInvokerSystem : BaseXAESystem<XAERandomTele
             return;
         // todo: teleport person who activated artifact with artifact itself
         var component = ent.Comp;
+
+        // Never relocate a fixed artifact (a Paragon or a defense structure is Static). Only mobile
+        // hand-held artifacts should blink around.
+        if (TryComp<PhysicsComponent>(args.Artifact, out var body) && body.BodyType == BodyType.Static)
+            return;
 
         var xform = Transform(args.Artifact);
         _popup.PopupPredictedCoordinates(Loc.GetString("blink-artifact-popup"), xform.Coordinates, args.User, PopupType.Medium);

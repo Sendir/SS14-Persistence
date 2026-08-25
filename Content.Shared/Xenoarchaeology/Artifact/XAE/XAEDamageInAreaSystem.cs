@@ -27,8 +27,11 @@ public sealed class XAEDamageInAreaSystem : BaseXAESystem<XAEDamageInAreaCompone
             return;
 
         var damageInAreaComponent = ent.Comp;
+        // Full scale: this effect powers window-breaking and the healing effects (negative damage),
+        // so scaling amplifies heals/window-breaks - it is not a direct player-damage effect.
+        var damage = damageInAreaComponent.Damage * args.Scale;
         _entitiesInRange.Clear();
-        _lookup.GetEntitiesInRange(ent.Owner, damageInAreaComponent.Radius, _entitiesInRange);
+        _lookup.GetEntitiesInRange(ent.Owner, damageInAreaComponent.Radius * args.Scale, _entitiesInRange);
         foreach (var entityInRange in _entitiesInRange)
         {
             if (!_random.Prob(damageInAreaComponent.DamageChance))
@@ -37,7 +40,7 @@ public sealed class XAEDamageInAreaSystem : BaseXAESystem<XAEDamageInAreaCompone
             if (_whitelistSystem.IsWhitelistFail(damageInAreaComponent.Whitelist, entityInRange))
                 continue;
 
-            _damageable.TryChangeDamage(entityInRange, damageInAreaComponent.Damage, damageInAreaComponent.IgnoreResistances);
+            _damageable.TryChangeDamage(entityInRange, damage, damageInAreaComponent.IgnoreResistances);
         }
     }
 }

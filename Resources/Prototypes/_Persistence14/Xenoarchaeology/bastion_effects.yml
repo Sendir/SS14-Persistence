@@ -1,0 +1,36 @@
+# _Persistence14 content: Bastion Ruin artifact effects.
+# ResyncBastionRuin is a deep effect: activating it spawns a Bastion Ruin in open space and turns this
+# artifact into that ruin's Paragon Artifact key.
+- type: entity
+  id: XenoArtifactEffectResyncBastionRuin
+  parent: BaseOneTimeXenoArtifactEffect
+  description: Resyncs the Bastion Ruin to this dimension
+  components:
+  - type: XAEResyncBastionRuin
+
+# TESTING: an effect table containing ONLY the resync effect, used by the single-node test key below.
+- type: entityTable
+  id: XenoArtifactEffectsBastionKeyTestOnly
+  table: !type:GroupSelector
+    children:
+    - id: XenoArtifactEffectResyncBastionRuin
+      weight: 1.0
+
+# TESTING: a hand-held artifact whose entire graph is a single node - the resync effect. The
+# spawnbastionruinrandom command spawns this and unlocks the node, so you get a clean, ready key
+# instead of a random 18-node artifact. Not for normal play.
+- type: entity
+  parent: BaseXenoArtifactItem
+  id: ParagonArtifactKeyTest
+  suffix: Bastion Key Test
+  components:
+  - type: XenoArtifact
+    nodeCount:
+      min: 1
+      max: 1
+    rootEffectsTable: !type:NestedSelector
+      tableId: XenoArtifactEffectsBastionKeyTestOnly
+    mainEffectsTable: !type:NestedSelector
+      tableId: XenoArtifactEffectsBastionKeyTestOnly
+    deepEffectsTable: !type:NestedSelector
+      tableId: XenoArtifactEffectsBastionKeyTestOnly

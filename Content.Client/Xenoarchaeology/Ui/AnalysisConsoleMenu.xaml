@@ -6,6 +6,7 @@
     Title="{Loc 'analysis-console-menu-title'}"
     MinSize="700 350"
     SetSize="980 550">
+    <Control HorizontalExpand="True" VerticalExpand="True">
     <BoxContainer Orientation="Horizontal" HorizontalExpand="True" VerticalExpand="True">
         <BoxContainer Margin="10 10 10 10" MaxWidth="240" SetWidth="240" Orientation="Vertical" HorizontalExpand="False" VerticalExpand="True">
             <PanelContainer Name="BackPanel" HorizontalAlignment="Center">
@@ -21,6 +22,7 @@
                 <Label Name="CycleLabel" Text="1/1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10 0 10 0" MinWidth="48"/>
                 <Button Name="CycleNextButton" Text="▶" StyleClasses="OpenLeft" MinWidth="40"/>
             </BoxContainer>
+            <RichTextLabel Name="PulseStatusLabel" HorizontalAlignment="Center" Margin="0 8 0 0" Visible="False"/>
             <customControls:HSeparator StyleClasses="HighDivider" Margin="0 15 0 10"/>
             <BoxContainer Name="ExtractContainer" Orientation="Vertical" VerticalExpand="True" Visible="False">
                 <PanelContainer HorizontalExpand="True" VerticalExpand="True" RectClipContent="True">
@@ -93,4 +95,19 @@
             </PanelContainer>
         </BoxContainer>
     </BoxContainer>
+        <!-- Locked screen: shown over everything when the displayed artifact is still suppressed
+             (e.g. a Paragon Artifact with no key slotted). -->
+        <PanelContainer Name="LockedScreen" Visible="False" HorizontalExpand="True" VerticalExpand="True">
+            <PanelContainer.PanelOverride>
+                <gfx:StyleBoxFlat BackgroundColor="#000000FF" />
+            </PanelContainer.PanelOverride>
+            <BoxContainer Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <!-- The key's live in-game sprite, tinted into a silhouette in code (no baked image). -->
+                <SpriteView Name="LockedKeyView" Scale="4 4" OverrideDirection="South"
+                            HorizontalAlignment="Center" VerticalAlignment="Center" MinSize="128 128"/>
+                <Label Name="LockedScreenLabel" Text="{Loc 'analysis-console-paragon-locked'}"
+                       HorizontalAlignment="Center" Margin="0 15 0 0"/>
+            </BoxContainer>
+        </PanelContainer>
+    </Control>
 </controls:FancyWindow>

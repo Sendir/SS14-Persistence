@@ -25,7 +25,7 @@ public sealed class XAETemperatureSystem : BaseXAESystem<XAETemperatureComponent
         if (center == null)
             return;
 
-        UpdateTileTemperature(component, center);
+        UpdateTileTemperature(component, center, args.Scale);
 
         if (component.AffectAdjacentTiles && transform.GridUid != null)
         {
@@ -34,16 +34,18 @@ public sealed class XAETemperatureSystem : BaseXAESystem<XAETemperatureComponent
 
             while (enumerator.MoveNext(out var mixture))
             {
-                UpdateTileTemperature(component, mixture);
+                UpdateTileTemperature(component, mixture, args.Scale);
             }
         }
     }
 
-    private void UpdateTileTemperature(XAETemperatureComponent component, GasMixture environment)
+    // Scale drives how far past the target it pushes (how much hotter/colder it goes) and how big a
+    // step it applies per activation.
+    private void UpdateTileTemperature(XAETemperatureComponent component, GasMixture environment, float scale)
     {
-        var dif = component.TargetTemperature - environment.Temperature;
+        var dif = (component.TargetTemperature - environment.Temperature) * scale;
         var absDif = Math.Abs(dif);
-        var step = Math.Min(absDif, component.SpawnTemperature);
+        var step = Math.Min(absDif, component.SpawnTemperature * scale);
         environment.Temperature += dif > 0 ? step : -step;
     }
 }

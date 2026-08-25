@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "PLACEHOLDER derived from SS14 xeno_artifacts.rsi (ano22), upscaled to native 2x2 (64x64). Replace with dedicated art at this size - do NOT scale in YAML.",
+  "size": {
+    "x": 64,
+    "y": 64
+  },
+  "states": [
+    {
+      "name": "base"
+    },
+    {
+      "name": "unlocking"
+    },
+    {
+      "name": "activation"
+    }
+  ]
+}

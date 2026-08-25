@@ -91,6 +91,15 @@ public sealed partial class XenoArtifactComponent : Component
     /// </summary>
     [DataField]
     public float ArtifexiumCostPerTrigger = 5f;
+
+    /// <summary>
+    /// Multiplier applied to this artifact's effects on activation, passed through
+    /// <see cref="SharedXenoArtifactSystem.XenoArtifactNodeActivatedEvent.Scale"/>. 1 = normal; the
+    /// Paragon uses 10 and defense-spawned artifacts use 3. Each effect decides how to apply it (some
+    /// multiply amount/range fully, some dampened, some ignore it entirely).
+    /// </summary>
+    [DataField]
+    public float EffectScale = 1f;
     #endregion
 
     // NOTE: you should not be accessing any of these values directly. Use the methods in SharedXenoArtifactSystem.Graph

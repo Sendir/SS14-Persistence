@@ -85,8 +85,13 @@ namespace Content.Client.Verbs.UI
         /// </param>
         public void OpenVerbMenu(EntityUid target, bool force = false, ContextMenuPopup? popup = null)
         {
-            DebugTools.Assert(target.IsValid());
-            OpenVerbMenu(EntityManager.GetNetEntity(target), force, popup);
+            // The target can be mid-deletion (its MetaData already gone) if it vanished between the
+            // right-click and the menu opening - e.g. a transient entity. GetNetEntity would then fail and
+            // the NetEntity overload's IsValid assert would crash the client. Bail out instead.
+            if (!EntityManager.TryGetComponent(target, out MetaDataComponent? meta))
+                return;
+
+            OpenVerbMenu(EntityManager.GetNetEntity(target, meta), force, popup);
         }
 
         /// <summary>

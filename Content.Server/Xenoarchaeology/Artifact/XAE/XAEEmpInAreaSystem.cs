@@ -15,6 +15,6 @@ public sealed class XAEEmpInAreaSystem : BaseXAESystem<XAEEmpInAreaComponent>
     /// <inheritdoc />
     protected override void OnActivated(Entity<XAEEmpInAreaComponent> ent, ref XenoArtifactNodeActivatedEvent args)
     {
-        _emp.EmpPulse(args.Coordinates, ent.Comp.Range, ent.Comp.EnergyConsumption, ent.Comp.DisableDuration);
+        _emp.EmpPulse(args.Coordinates, ent.Comp.Range * args.Scale, ent.Comp.EnergyConsumption, ent.Comp.DisableDuration * (args.Scale / 2f));
     }
 }

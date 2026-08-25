@@ -19,6 +19,8 @@ public sealed class XAETriggerExplosivesSystem : BaseXAESystem<XAETriggerExplosi
         if (!TryComp<ExplosiveComponent>(ent, out var explosiveComp))
             return;
 
-        _explosion.TriggerExplosive(ent, explosiveComp);
+        // Full scale - the Paragon's explosion is a mini-nuke. totalIntensity overrides the default
+        // (which would otherwise be capped by MaxIntensity on the component).
+        _explosion.TriggerExplosive(ent, explosiveComp, totalIntensity: explosiveComp.TotalIntensity * args.Scale);
     }
 }

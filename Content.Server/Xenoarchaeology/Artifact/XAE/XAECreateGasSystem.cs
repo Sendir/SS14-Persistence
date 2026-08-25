@@ -36,7 +36,7 @@ public sealed class XAECreateGasSystem : BaseXAESystem<XAECreateGasComponent>
             if (_atmosphere.TryGetExposedMixture(current, out var containedMixture))
             {
                 foreach (var (gas, moles) in ent.Comp.Gases)
-                    containedMixture.AdjustMoles(gas, moles);
+                    containedMixture.AdjustMoles(gas, moles * args.Scale);
                 return;
             }
 
@@ -62,7 +62,7 @@ public sealed class XAECreateGasSystem : BaseXAESystem<XAECreateGasComponent>
 
         foreach (var (gas, moles) in ent.Comp.Gases)
         {
-            var molesPerMixture = moles / mixtures.Count;
+            var molesPerMixture = moles * args.Scale / mixtures.Count;
 
             foreach (var mixture in mixtures)
             {

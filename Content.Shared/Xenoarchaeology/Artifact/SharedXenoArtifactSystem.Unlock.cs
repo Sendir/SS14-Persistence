@@ -117,7 +117,12 @@ public abstract partial class SharedXenoArtifactSystem
         foreach (var nodeIndex in GetAllNodeIndices((ent, ent)))
         {
             var artifactComponent = ent.Comp2;
-            var curNode = GetNode((ent, artifactComponent), nodeIndex);
+            // TryGetNode (not GetNode): a node index can transiently fail to resolve during client
+            // prediction of a rapidly spawned+deleted artifact (its node entities aren't present yet /
+            // already gone). Skip rather than throw.
+            if (!TryGetNode((ent, artifactComponent), nodeIndex, out var curNodeNullable))
+                continue;
+            var curNode = curNodeNullable.Value;
             if (!curNode.Comp.Locked || !CanUnlockNode((curNode, curNode)))
                 continue;
 

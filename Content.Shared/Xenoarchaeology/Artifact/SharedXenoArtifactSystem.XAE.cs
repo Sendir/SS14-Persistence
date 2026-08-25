@@ -143,7 +143,7 @@ public abstract partial class SharedXenoArtifactSystem
         {
             Shatter(node.AsNullable());
         }
-        var ev = new XenoArtifactNodeActivatedEvent(artifact, node, user, target, coordinates);
+        var ev = new XenoArtifactNodeActivatedEvent(artifact, node, user, target, coordinates, artifact.Comp.EffectScale);
         RaiseLocalEvent(node, ref ev);
         node.Comp.ActivatedOnce = true;
         return true;
@@ -202,7 +202,10 @@ public readonly record struct XenoArtifactNodeActivatedEvent(
     Entity<XenoArtifactNodeComponent> Node,
     EntityUid? User,
     EntityUid? Target,
-    EntityCoordinates Coordinates
+    EntityCoordinates Coordinates,
+    // Per-artifact effect multiplier (see XenoArtifactComponent.EffectScale). 1 = normal. Each effect
+    // decides how to apply it: multiply amount/range, a dampened fraction, or ignore it.
+    float Scale = 1f
 );
 
 [ByRefEvent]

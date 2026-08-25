@@ -4,6 +4,7 @@ using Content.Client.Resources;
 using Content.Client.UserInterface.Controls;
 using Content.Client.Xenoarchaeology.Artifact;
 using Content.Client.Xenoarchaeology.Equipment;
+using Content.Shared._Persistence14.Bastion;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
 using Content.Shared.Xenoarchaeology.Equipment.Components;
 using Robust.Client.Audio;
@@ -107,6 +108,7 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
         var count = 0;
         foreach (var artifact in artifacts)
         {
+            var artifactSum = 0;
             foreach (var node in _xenoArtifact.GetAllNodes(artifact))
             {
                 var pointValue = _xenoArtifact.GetResearchValue(node);
@@ -114,7 +116,7 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
                     continue;
 
                 count++;
-                _extractionSum += pointValue;
+                artifactSum += pointValue;
 
                 var nodeId = _xenoArtifact.GetNodeId(node);
 
@@ -122,6 +124,10 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
                 extractionMessage.AddMarkupOrThrow(text);
                 extractionMessage.PushNewline();
             }
+
+            // Apply the artifact's own point multiplier (default 1) so the preview total matches the payout.
+            var multiplier = _ent.TryGetComponent<ArtifactPointMultiplierComponent>(artifact, out var mult) ? mult.Multiplier : 1f;
+            _extractionSum += (int) (artifactSum * multiplier);
         }
 
         if (count == 0)
@@ -154,6 +160,43 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
         _artifactAnalyzer.TryGetArtifactFromConsole(ent, out var arti);
         ArtifactView.SetEntity(arti);
         GraphControl.SetArtifact(arti);
+
+        // A suppressed artifact (e.g. a Paragon Artifact with no key slotted yet) shows a locked screen
+        // over the whole console instead of its graph. The key's live sprite is rendered and tinted
+        // into a silhouette - no baked image.
+        if (arti is { } lockedArti && lockedArti.Comp.Suppressed)
+        {
+            LockedScreen.Visible = true;
+            if (_ent.TryGetComponent<ParagonKeyDisplayComponent>(lockedArti.Owner, out var keyDisplay)
+                && keyDisplay.Key is { } keyNet)
+            {
+                LockedKeyView.SetEntity(keyNet);
+                LockedKeyView.Modulate = Color.FromHex("#6f6f88");
+                LockedKeyView.Visible = true;
+            }
+            else
+            {
+                LockedKeyView.Visible = false;
+            }
+        }
+        else
+        {
+            LockedScreen.Visible = false;
+        }
+
+        // Defense-pulse readout (Bastion Paragon only): qualitative "how close is the next pulse".
+        if (arti is { } pulseArti
+            && _ent.TryGetComponent<BastionPulseComponent>(pulseArti.Owner, out var pulse)
+            && pulse.CurrentDescriptor is { } descriptor)
+        {
+            PulseStatusLabel.Visible = true;
+            PulseStatusLabel.SetMarkup(Loc.GetString("analysis-console-pulse-status",
+                ("state", Loc.GetString(descriptor))));
+        }
+        else
+        {
+            PulseStatusLabel.Visible = false;
+        }
 
         ExtractButton.Disabled = arti == null;
 

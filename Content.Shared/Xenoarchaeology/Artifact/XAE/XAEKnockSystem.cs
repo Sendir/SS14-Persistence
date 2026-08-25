@@ -12,6 +12,6 @@ public sealed class XAEKnockSystem : BaseXAESystem<XAEKnockComponent>
     /// <inheritdoc />
     protected override void OnActivated(Entity<XAEKnockComponent> ent, ref XenoArtifactNodeActivatedEvent args)
     {
-        _magic.Knock(args.Artifact, ent.Comp.KnockRange);
+        _magic.Knock(args.Artifact, ent.Comp.KnockRange * (args.Scale / 2f));
     }
 }

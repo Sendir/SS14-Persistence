@@ -83,6 +83,13 @@ public sealed class FireVisualizerSystem : VisualizerSystem<FireVisualsComponent
         else
             SpriteSystem.LayerSetRsiState((uid, sprite), index, component.NormalState);
 
+        // Don't parent the fire light to an owner that is still initializing (e.g. an entity that arrives
+        // already on fire - spawned-and-ignited in one tick, or entering PVS while burning): attaching a
+        // child to a not-yet-initialized parent asserts. The light is created on the next appearance update
+        // (fire produces them constantly as stacks tick), by which point the owner is running.
+        if (component.LightEntity == null && MetaData(uid).EntityLifeStage < EntityLifeStage.Initialized)
+            return;
+
         component.LightEntity ??= Spawn(null, new EntityCoordinates(uid, default));
         var light = EnsureComp<PointLightComponent>(component.LightEntity.Value);
 

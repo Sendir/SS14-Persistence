@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "license": "CC-BY-SA-3.0",
+  "copyright": "PLACEHOLDER derived from Space Station 14 xeno_artifacts.rsi (ano03), upscaled to a native 2x2 (64x64). Replace with dedicated Paragon art at this size - do NOT scale the sprite in YAML.",
+  "size": {
+    "x": 64,
+    "y": 64
+  },
+  "states": [
+    {
+      "name": "base"
+    },
+    {
+      "name": "unlocking"
+    },
+    {
+      "name": "activation"
+    }
+  ]
+}

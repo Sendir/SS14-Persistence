@@ -77,6 +77,12 @@ public sealed class TetherVisualSystem : EntitySystem
         {
             if (!Exists(tether.Source) || !Exists(tether.Target))
             {
+                // A linked tether's teardown (and its break event) is owned by TetherLinkSystem - let
+                // it observe the missing endpoint and fire TetherLinkBrokenEvent first, rather than
+                // silently deleting the tether out from under it here.
+                if (HasComp<TetherLinkComponent>(uid))
+                    continue;
+
                 // An endpoint is outright gone - no sane retract animation possible, just delete.
                 QueueDel(uid);
                 continue;

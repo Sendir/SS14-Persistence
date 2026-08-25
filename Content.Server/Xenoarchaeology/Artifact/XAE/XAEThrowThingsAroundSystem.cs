@@ -39,10 +39,11 @@ public sealed class XAEThrowThingsAroundSystem : BaseXAESystem<XAEThrowThingsAro
     protected override void OnActivated(Entity<XAEThrowThingsAroundComponent> ent, ref XenoArtifactNodeActivatedEvent args)
     {
         var component = ent.Comp;
+        var range = component.Range * args.Scale;
         var xform = Transform(ent);
         if (TryComp<MapGridComponent>(xform.GridUid, out var grid))
         {
-            var areaForTilesPry = new Circle(_transform.GetWorldPosition(xform), component.Range);
+            var areaForTilesPry = new Circle(_transform.GetWorldPosition(xform), range);
             var tiles = _map.GetTilesIntersecting(xform.GridUid.Value, grid, areaForTilesPry, true);
 
             foreach (var tile in tiles)
@@ -55,7 +56,7 @@ public sealed class XAEThrowThingsAroundSystem : BaseXAESystem<XAEThrowThingsAro
         }
 
         _entities.Clear();
-        _lookup.GetEntitiesInRange(ent, component.Range, _entities, LookupFlags.Dynamic | LookupFlags.Sundries);
+        _lookup.GetEntitiesInRange(ent, range, _entities, LookupFlags.Dynamic | LookupFlags.Sundries);
         foreach (var entity in _entities)
         {
             if (_physQuery.TryGetComponent(entity, out var phys)
@@ -65,7 +66,7 @@ public sealed class XAEThrowThingsAroundSystem : BaseXAESystem<XAEThrowThingsAro
             var tempXform = Transform(entity);
 
             var foo = _transform.GetWorldPosition(tempXform) - _transform.GetWorldPosition(xform);
-            _throwing.TryThrow(entity, foo * 2, component.ThrowStrength, ent, 0);
+            _throwing.TryThrow(entity, foo * 2, component.ThrowStrength * (args.Scale / 2f), ent, 0);
         }
     }
 }
