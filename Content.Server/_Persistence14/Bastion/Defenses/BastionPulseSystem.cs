@@ -30,6 +30,16 @@ public sealed class BastionPulseSystem : EntitySystem
         var query = EntityQueryEnumerator<BastionPulseComponent, XenoArtifactComponent>();
         while (query.MoveNext(out var uid, out var pulse, out var xeno))
         {
+            var severity = GetSeverity((uid, xeno));
+
+            // Fully unlocked: the Paragon is beaten, so the defense shuts off for good. Park the timer.
+            if (severity >= 1f)
+            {
+                pulse.NextPulse = now + NextInterval(pulse);
+                SetReadout(uid, pulse, pulse.CompletedDescriptor, dormant: true);
+                continue;
+            }
+
             if (!AnyPlayerNear(uid, pulse.ActivationRange))
             {
                 // Dormant: keep the timer topped up so it starts fresh the moment players arrive.
@@ -47,7 +57,7 @@ public sealed class BastionPulseSystem : EntitySystem
 
             if (remaining <= 0f || earlyFire)
             {
-                var ev = new BastionDefensePulseEvent(uid, GetSeverity((uid, xeno)));
+                var ev = new BastionDefensePulseEvent(uid, severity);
                 RaiseLocalEvent(uid, ref ev);
 
                 pulse.NextPulse = now + NextInterval(pulse);

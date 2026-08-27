@@ -46,10 +46,19 @@ public sealed class BastionRuinSystem : EntitySystem
     };
 
     /// <summary>Half-width of the asteroid platform, in tiles (so the ruin is ~(2N+1) square).</summary>
-    private const int RuinHalfSize = 6;
+    private const int RuinHalfSize = 9;
 
     /// <summary>The floor the platform is made of.</summary>
     private const string RuinFloorTile = "FloorAsteroidSand";
+
+    /// <summary>
+    /// TESTING marker: a one-tile-thick ring of a distinct floor laid this many tiles from the Paragon,
+    /// roughly at the edge of the dormancy range (BastionPulse.activationRange) so a tester can see where
+    /// the defense stops reacting. Purely cosmetic.
+    /// </summary>
+    private const float DormantRingRadius = 6f;
+
+    private const string DormantRingTile = "FloorSteel";
 
     /// <summary>Tiles of slack added around the map's inhabited region, so the ruin can also land a bit out in the void beyond the outermost grids.</summary>
     private const float SpawnRegionMargin = 100f;
@@ -82,14 +91,18 @@ public sealed class BastionRuinSystem : EntitySystem
         EnsureComp<GridAtmosphereComponent>(gridEnt.Owner);
 
         // Tiles span [-RuinHalfSize, RuinHalfSize) so the platform's world extent is symmetric about the
-        // tile corner (0,0) - that corner is the field's dead centre, where the 2x2 Paragon goes.
-        var tile = new Tile(_tileDefManager[RuinFloorTile].TileId);
+        // tile corner (0,0) - that corner is the field's dead centre, where the 2x2 Paragon goes. Tiles whose
+        // centre falls in the dormancy-ring band get a distinct floor as a visual marker.
+        var floor = new Tile(_tileDefManager[RuinFloorTile].TileId);
+        var ring = new Tile(_tileDefManager[DormantRingTile].TileId);
         for (var x = -RuinHalfSize; x < RuinHalfSize; x++)
         {
             for (var y = -RuinHalfSize; y < RuinHalfSize; y++)
             {
                 var tileCoords = new Vector2i(x, y);
-                _map.SetTile(gridEnt.Owner, gridEnt.Comp, tileCoords, tile);
+                var dist = MathF.Sqrt((x + 0.5f) * (x + 0.5f) + (y + 0.5f) * (y + 0.5f));
+                var onRing = dist >= DormantRingRadius - 0.5f && dist < DormantRingRadius + 0.5f;
+                _map.SetTile(gridEnt.Owner, gridEnt.Comp, tileCoords, onRing ? ring : floor);
                 _atmosphere.InvalidateTile(gridEnt.Owner, tileCoords);
             }
         }
@@ -106,8 +119,9 @@ public sealed class BastionRuinSystem : EntitySystem
 
     /// <summary>
     /// Places the fixed structures at the ruin's centre: the analysis pad, the Paragon Artifact on top
-    /// of it, and a console beside them. All three are made indestructible and un-unanchorable, the
-    /// console is device-linked to the pad, and the pad is pointed at the Paragon.
+    /// of it, and a console beside them. All three are un-unanchorable; the pad + console are godmoded
+    /// (the Paragon deliberately is not - see below), the console is device-linked to the pad, and the
+    /// pad is pointed at the Paragon.
     /// </summary>
     private void SpawnRuinContents(EntityUid grid, BastionRuinComponent ruinComp)
     {
@@ -121,10 +135,16 @@ public sealed class BastionRuinSystem : EntitySystem
         var console = Spawn(ConsoleProto, consoleAt);
         ruinComp.Paragon = paragon;
 
-        // Indestructible and impossible to unanchor - "powered by the artifact", part of the ruin.
+        // Godmode the pad + console (fully invulnerable machines). NOT the Paragon: godmode cancels all
+        // damage, which would block its damage-based unlock triggers (radiation, brute, etc.). It has no
+        // destruction path (Damageable but no Destructible/MobState) so it can't be destroyed anyway - it
+        // just needs to register damage for those triggers to fire.
+        _godmode.EnableGodmode(pad);
+        _godmode.EnableGodmode(console);
+
+        // Impossible to unanchor - "powered by the artifact", part of the ruin.
         foreach (var structure in new[] { pad, paragon, console })
         {
-            _godmode.EnableGodmode(structure);
             RemComp<AnchorableComponent>(structure);
         }
 

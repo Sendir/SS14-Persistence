@@ -3,10 +3,13 @@ analysis-console-paragon-locked = The Paragon Artifact needs a key.
 
 # Defense-pulse console readout (configurable bands live on the Paragon's BastionPulse component).
 analysis-console-pulse-status = Defense: {$state}
+# Shown while the ruin is tearing down (Paragon completed / lifetime expired).
+analysis-console-teardown = Bastion ruin pulled back to where it came from in {$seconds}s...
 bastion-pulse-dormant = Dormant — no intruders detected
 bastion-pulse-distant = Charging
 bastion-pulse-near = Discharge nearing
 bastion-pulse-imminent = Discharge imminent
+bastion-pulse-complete = Dormant — the Paragon is spent
 paragon-key-inserted = The key sinks in and dissolves. The Paragon Artifact shudders awake — its graph is unlocked.
 paragon-key-wrong = The slot rejects it — this is not the key attuned to this Paragon.
 

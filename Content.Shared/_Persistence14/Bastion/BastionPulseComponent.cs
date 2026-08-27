@@ -49,6 +49,10 @@ public sealed partial class BastionPulseComponent : Component
     [DataField]
     public string DormantDescriptor = "bastion-pulse-dormant";
 
+    /// <summary>Console text shown once the Paragon is fully unlocked and the defense has shut off.</summary>
+    [DataField]
+    public string CompletedDescriptor = "bastion-pulse-complete";
+
     /// <summary>When the next pulse is due. Server runtime.</summary>
     [DataField(customTypeSerializer: typeof(TimeOffsetSerializer)), AutoPausedField]
     public TimeSpan NextPulse;

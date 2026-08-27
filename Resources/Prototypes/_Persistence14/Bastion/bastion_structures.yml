@@ -21,10 +21,11 @@
     layers:
     - state: base
       map: [ "enum.ArtifactsVisualLayers.Base" ]
-    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
-    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
-    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
-    - state: unlocking
+    # Unlock glow / activation flash: the ORIGINAL animated artifact states (this placeholder's matching
+    # ano##_on + artifact-activation) scaled 2x over the 64x64 base. BastionArtifactVisualsSystem toggles them.
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: ano03_on
+      scale: 2, 2
       map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
       visible: false
     - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
@@ -66,18 +67,20 @@
       tableId: BastionParagonEffectsMain
     deepEffectsTable: !type:NestedSelector
       tableId: BastionParagonEffectsDeep
+    # TESTING: tiny graph so the Paragon can be fully unlocked quickly to exercise the completion/teardown
+    # flow. Restore to a boss-sized graph (~13-26) before shipping.
     nodeCount:
-      min: 13
-      max: 26
+      min: 3
+      max: 4
     segmentSize:
-      min: 8
-      max: 13
+      min: 3
+      max: 4
     nodesPerSegmentLayer:
       min: 1
-      max: 4
+      max: 2
     scatterPerLayer:
       min: 0
-      max: 4
+      max: 1
   - type: ItemSlots
     slots:
       paragon_key:
@@ -96,6 +99,11 @@
   # How much this artifact's extracted points are worth. Lives on the artifact, not the console.
   - type: ArtifactPointMultiplier
     multiplier: 20
+  # Auto-teardown: the ruin removes itself when the Paragon is fully unlocked (after a short console
+  # countdown) or when its lifetime runs out. TESTING values; raise before shipping.
+  - type: BastionLifecycle
+    lifetime: 600 # 10 minutes
+    completionGrace: 10
   # Defense-pulse clock. pulseInterval = guaranteed max time between pulses. Bands are matched by
   # seconds-until-next-pulse and drive the console readout; a band with earlyPulseChance can also
   # discharge early while the timer sits in it (per-second chance). Tune all of this here.
@@ -105,7 +113,7 @@
     pulseInterval: 30
     pulseIntervalMin: 10
     pulseIntervalMax: 30
-    activationRange: 100
+    activationRange: 5 # TESTING: dormant unless a player is within 5 tiles (raise before shipping)
     bands:
     - descriptor: bastion-pulse-distant   # 20s+ out
       from: 20
@@ -194,10 +202,11 @@
     layers:
     - state: base
       map: [ "enum.ArtifactsVisualLayers.Base" ]
-    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
-    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
-    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
-    - state: unlocking
+    # Unlock glow / activation flash: the ORIGINAL animated artifact states (this placeholder's matching
+    # ano##_on + artifact-activation) scaled 2x over the 64x64 base. BastionArtifactVisualsSystem toggles them.
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: ano12_on
+      scale: 2, 2
       map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
       visible: false
     - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
@@ -219,10 +228,11 @@
     layers:
     - state: base
       map: [ "enum.ArtifactsVisualLayers.Base" ]
-    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
-    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
-    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
-    - state: unlocking
+    # Unlock glow / activation flash: the ORIGINAL animated artifact states (this placeholder's matching
+    # ano##_on + artifact-activation) scaled 2x over the 64x64 base. BastionArtifactVisualsSystem toggles them.
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: ano22_on
+      scale: 2, 2
       map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
       visible: false
     - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
@@ -244,10 +254,11 @@
     layers:
     - state: base
       map: [ "enum.ArtifactsVisualLayers.Base" ]
-    # Unlocking uses the Paragon's own unlocking state so it matches the sprite (placeholder art is
-    # single-frame, so it doesn't animate yet). Activation uses the standard animated flash, scaled to
-    # cover the 2x2. BastionArtifactVisualsSystem toggles their visibility.
-    - state: unlocking
+    # Unlock glow / activation flash: the ORIGINAL animated artifact states (this placeholder's matching
+    # ano##_on + artifact-activation) scaled 2x over the 64x64 base. BastionArtifactVisualsSystem toggles them.
+    - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
+      state: ano33_on
+      scale: 2, 2
       map: [ "enum.ArtifactsVisualLayers.UnlockingEffect" ]
       visible: false
     - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi

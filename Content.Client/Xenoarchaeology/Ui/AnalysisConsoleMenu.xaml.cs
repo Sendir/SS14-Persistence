@@ -147,12 +147,33 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
     {
         base.FrameUpdate(args);
 
+        UpdateTeardownCountdown();
+
         if (_hideExtractInfoIn == null || _timing.CurTime + _meta.GetPauseTime(_owner) < _hideExtractInfoIn)
             return;
 
         ExtractContainer.Visible = false;
         NodeViewContainer.Visible = true;
         _hideExtractInfoIn = null;
+    }
+
+    /// <summary>
+    /// While the shown Paragon is being pulled back (Bastion teardown), overrides the pulse readout with a
+    /// live "returning in Xs" countdown. Done per-frame so the number ticks smoothly.
+    /// </summary>
+    private void UpdateTeardownCountdown()
+    {
+        if (!_ent.TryGetComponent<AnalysisConsoleComponent>(_owner, out var console)
+            || !_artifactAnalyzer.TryGetArtifactFromConsole((_owner, console), out var arti)
+            || !_ent.TryGetComponent<BastionLifecycleComponent>(arti.Value.Owner, out var life)
+            || !life.TearingDown)
+            return;
+
+        var seconds = Math.Max(0, (int)Math.Ceiling((life.TeardownTime - _timing.CurTime).TotalSeconds));
+        var text = Loc.GetString("analysis-console-teardown", ("seconds", seconds));
+        PulseStatusLabel.Visible = true;
+        // Make the teardown warning stand out over the normal readout: larger, bold, and coloured.
+        PulseStatusLabel.SetMarkupPermissive($"[color=#ff5533][font size=18][bold]{text}[/bold][/font][/color]");
     }
 
     public void Update(Entity<AnalysisConsoleComponent> ent)
