@@ -1,0 +1,356 @@
+# _Persistence14: the Bastion Ruin's summon roster. Each entry is a stock dangerous mob re-skinned
+# into a Bastion guardian - faction overridden to ParagonBastion (one team; hostile to all but the
+# eye hivemind) and tagged BastionMob so the Mobs defense can space-rescue it with a tether. Stats,
+# sprite and AI stay stock, so these are cheap variants. Tier lives in the summon tables
+# (bastion_mob_defense.yml), not here.
+#
+# NOTE: `factions` is redefined (not merged) so it fully REPLACES the stock faction - a Bastion xeno
+# is ParagonBastion only, so it won't treat other xenos as kin nor be ignored by them.
+
+# --- Weak tier ---
+- type: entity
+  parent: MobGlockroach
+  id: MobBastionGlockroach
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobPurpleSnake
+  id: MobBastionPurpleSnake
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobKobold
+  id: MobBastionKobold
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobOreCrab
+  id: MobBastionOreCrab
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobCarp
+  id: MobBastionCarp
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+
+# --- Medium tier ---
+- type: entity
+  parent: MobCobraSpace
+  id: MobBastionCobra
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobKangarooSpace
+  id: MobBastionKangaroo
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobGiantSpiderAngry
+  id: MobBastionGiantSpider
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobSpiderSpace
+  id: MobBastionSpaceSpider
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobXenoDrone
+  id: MobBastionXenoDrone
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobXenoRunner
+  id: MobBastionXenoRunner
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobXenoSpitter
+  id: MobBastionXenoSpitter
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobBasilisk
+  id: MobBastionBasilisk
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobFleshGolem
+  id: MobBastionFleshGolem
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobFleshClamp
+  id: MobBastionFleshClamp
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobGorilla
+  id: MobBastionGorilla
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobTomatoKiller
+  id: MobBastionTomatoKiller
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobLaserRaptor
+  id: MobBastionLaserRaptor
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobShark
+  id: MobBastionShark
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobAdultSlimesBlueAngry
+  id: MobBastionSlimeBlue
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobAdultSlimesGreenAngry
+  id: MobBastionSlimeGreen
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobAdultSlimesYellowAngry
+  id: MobBastionSlimeYellow
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobIronCrab
+  id: MobBastionIronCrab
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobGoldCrab
+  id: MobBastionGoldCrab
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobArgocyteSwiper
+  id: MobBastionArgocyteSwiper
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobArgocyteGlider
+  id: MobBastionArgocyteGlider
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobBearSpace
+  id: MobBastionBearSpace
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+
+# --- Deadly tier ---
+- type: entity
+  parent: MobGoliath
+  id: MobBastionGoliath
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobHivelord
+  id: MobBastionHivelord
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobAbomination
+  id: MobBastionAbomination
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobHellspawn
+  id: MobBastionHellspawn
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobXenoRavager
+  id: MobBastionXenoRavager
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobXenoLonePraetorianNoGhost
+  id: MobBastionXenoPraetorian
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobClownSpider
+  id: MobBastionClownSpider
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobUraniumCrab
+  id: MobBastionUraniumCrab
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobFleshJared
+  id: MobBastionFleshJared
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobArgocyteEnforcer
+  id: MobBastionArgocyteEnforcer
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob
+- type: entity
+  parent: MobCarpMagic
+  id: MobBastionCarpMagic
+  suffix: Bastion
+  components:
+  - type: NpcFactionMember
+    factions:
+    - ParagonBastion
+  - type: BastionMob

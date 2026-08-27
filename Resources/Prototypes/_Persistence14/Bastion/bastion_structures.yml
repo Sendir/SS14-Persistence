@@ -266,6 +266,17 @@
       scale: 2, 2
       map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
       visible: false
+  # Every node spawns guardians: override the shared effect pools with the mob-only, depth-tiered tables.
+  # effectScale 1 (not the base's 10): each mob node spawns its own native min..max pack, so the generic
+  # x-scaling must NOT also multiply it - the count lives entirely in the effect's RangeNumberSelector.
+  - type: XenoArtifact
+    effectScale: 1
+    rootEffectsTable: !type:NestedSelector
+      tableId: BastionParagonMobEffectsRoot
+    mainEffectsTable: !type:NestedSelector
+      tableId: BastionParagonMobEffectsMain
+    deepEffectsTable: !type:NestedSelector
+      tableId: BastionParagonMobEffectsDeep
   - type: BastionDefenseMobs
 
 # --- Defense A payload: the artifacts the Artifacts-defense Paragon flings out. A structure artifact

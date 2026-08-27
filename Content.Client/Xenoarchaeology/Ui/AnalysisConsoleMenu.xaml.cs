@@ -147,7 +147,7 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
     {
         base.FrameUpdate(args);
 
-        UpdateTeardownCountdown();
+        UpdatePulseReadout();
 
         if (_hideExtractInfoIn == null || _timing.CurTime + _meta.GetPauseTime(_owner) < _hideExtractInfoIn)
             return;
@@ -158,22 +158,40 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
     }
 
     /// <summary>
-    /// While the shown Paragon is being pulled back (Bastion teardown), overrides the pulse readout with a
-    /// live "returning in Xs" countdown. Done per-frame so the number ticks smoothly.
+    /// Drives the console's defense readout every frame (the underlying state is a networked component that
+    /// changes each second, so a one-shot BUI Update would leave it stale until the console is reopened).
+    /// Teardown takes priority - a live "returning in Xs" countdown - otherwise the qualitative pulse band.
     /// </summary>
-    private void UpdateTeardownCountdown()
+    private void UpdatePulseReadout()
     {
         if (!_ent.TryGetComponent<AnalysisConsoleComponent>(_owner, out var console)
-            || !_artifactAnalyzer.TryGetArtifactFromConsole((_owner, console), out var arti)
-            || !_ent.TryGetComponent<BastionLifecycleComponent>(arti.Value.Owner, out var life)
-            || !life.TearingDown)
+            || !_artifactAnalyzer.TryGetArtifactFromConsole((_owner, console), out var arti))
+        {
+            PulseStatusLabel.Visible = false;
             return;
+        }
 
-        var seconds = Math.Max(0, (int)Math.Ceiling((life.TeardownTime - _timing.CurTime).TotalSeconds));
-        var text = Loc.GetString("analysis-console-teardown", ("seconds", seconds));
-        PulseStatusLabel.Visible = true;
-        // Make the teardown warning stand out over the normal readout: larger, bold, and coloured.
-        PulseStatusLabel.SetMarkupPermissive($"[color=#ff5533][font size=18][bold]{text}[/bold][/font][/color]");
+        // Teardown countdown overrides the normal readout: larger, bold, and coloured so it stands out.
+        if (_ent.TryGetComponent<BastionLifecycleComponent>(arti.Value.Owner, out var life) && life.TearingDown)
+        {
+            var seconds = Math.Max(0, (int)Math.Ceiling((life.TeardownTime - _timing.CurTime).TotalSeconds));
+            var text = Loc.GetString("analysis-console-teardown", ("seconds", seconds));
+            PulseStatusLabel.Visible = true;
+            PulseStatusLabel.SetMarkupPermissive($"[color=#ff5533][font size=18][bold]{text}[/bold][/font][/color]");
+            return;
+        }
+
+        // Normal defense-pulse band (Bastion Paragon only), read live from the networked pulse component.
+        if (_ent.TryGetComponent<BastionPulseComponent>(arti.Value.Owner, out var pulse)
+            && pulse.CurrentDescriptor is { } descriptor)
+        {
+            PulseStatusLabel.Visible = true;
+            PulseStatusLabel.SetMarkup(Loc.GetString("analysis-console-pulse-status",
+                ("state", Loc.GetString(descriptor))));
+            return;
+        }
+
+        PulseStatusLabel.Visible = false;
     }
 
     public void Update(Entity<AnalysisConsoleComponent> ent)
@@ -205,19 +223,8 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
             LockedScreen.Visible = false;
         }
 
-        // Defense-pulse readout (Bastion Paragon only): qualitative "how close is the next pulse".
-        if (arti is { } pulseArti
-            && _ent.TryGetComponent<BastionPulseComponent>(pulseArti.Owner, out var pulse)
-            && pulse.CurrentDescriptor is { } descriptor)
-        {
-            PulseStatusLabel.Visible = true;
-            PulseStatusLabel.SetMarkup(Loc.GetString("analysis-console-pulse-status",
-                ("state", Loc.GetString(descriptor))));
-        }
-        else
-        {
-            PulseStatusLabel.Visible = false;
-        }
+        // The defense-pulse / teardown readout (PulseStatusLabel) is driven live in FrameUpdate
+        // (UpdatePulseReadout) since its state changes every second - a one-shot update here would go stale.
 
         ExtractButton.Disabled = arti == null;
 

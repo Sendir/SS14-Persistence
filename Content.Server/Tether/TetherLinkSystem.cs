@@ -1,3 +1,4 @@
+using System.Numerics;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Mobs.Systems;
 using Content.Shared.Tether;
@@ -72,9 +73,10 @@ public sealed class TetherLinkSystem : EntitySystem
     /// or pull is decided purely by that distance vs. where the target currently is. Safe to call
     /// repeatedly on the same tether to give it a new destination (e.g. fling out, then reel in).
     ///
-    /// Movement is kinematic: on the first drive the target is forced to a <see cref="BodyType.Kinematic"/>
-    /// body and thereafter moved only by this system's per-tick position updates - gravity, explosions,
-    /// throws and any other impulse cannot move it. Fires <see cref="TetherMoveEndedEvent"/> on arrival.
+    /// Movement is a physics velocity drive: on the first drive the target is forced <see cref="BodyType.Dynamic"/>
+    /// and thereafter its velocity is steered toward the destination each tick (capped by the mover's Speed,
+    /// ramped by its Strength), so it collides and drags for real. Fires <see cref="TetherMoveEndedEvent"/>
+    /// on arrival, or <see cref="TetherMoveOutcome.Collided"/> if a collidable target hits something solid.
     /// </summary>
     /// <param name="angle">Fixed direction from the source. Ignored if <paramref name="autoDirection"/>.</param>
     /// <param name="autoDirection">Recompute the direction each tick as the current source→target line.</param>
@@ -97,13 +99,16 @@ public sealed class TetherLinkSystem : EntitySystem
         if (mover.Setup)
             return; // already forced kinematic on a previous drive; just retarget it
 
-        // First drive: unanchor and force the target kinematic so ONLY our per-tick SetWorldPosition moves
-        // it. A kinematic body ignores forces/impulses/gravity entirely.
+        // First drive: unanchor and force the target Dynamic so the physics solver moves it by the velocity
+        // we set each tick - a real pull that collides and drags. Clear any leftover velocity (from a fling
+        // or a pull before we grabbed it) so the drive starts clean.
         _transform.Unanchor(target);
         if (TryComp<PhysicsComponent>(target, out var targetPhysics))
         {
             mover.OriginalBodyType = targetPhysics.BodyType;
-            _physics.SetBodyType(target, BodyType.Kinematic, body: targetPhysics);
+            _physics.SetBodyType(target, BodyType.Dynamic, body: targetPhysics);
+            _physics.SetLinearVelocity(target, Vector2.Zero, body: targetPhysics);
+            _physics.SetAngularVelocity(target, 0f, body: targetPhysics);
         }
 
         EnsureComp<TetherMoveTargetComponent>(target).Tether = tether;
@@ -208,21 +213,32 @@ public sealed class TetherLinkSystem : EntitySystem
                 dir = mover.Direction;
             }
 
+            if (!TryComp<PhysicsComponent>(visual.Target, out var targetPhysics))
+                continue;
+
             var destination = sourcePos + dir.ToVec() * mover.Distance;
             var toDest = destination - targetPos;
             var dist = toDest.Length();
 
             if (dist <= mover.ArriveTolerance)
             {
-                _transform.SetWorldPosition(visual.Target, destination); // snap to exact, then hold
+                _physics.SetLinearVelocity(visual.Target, Vector2.Zero, body: targetPhysics);
                 mover.Active = false;
                 RaiseMoveEnded(uid, visual, TetherMoveOutcome.Reached, null);
                 continue;
             }
 
-            // Kinematic step: move the target directly. Nothing but this touches its position.
-            var step = MathF.Min(dist, mover.Speed * frameTime);
-            _transform.SetWorldPosition(visual.Target, targetPos + toDest / dist * step);
+            // Velocity drive: command a speed toward the destination, capped at Speed and slowed as we near
+            // so we don't overshoot. Ramp our COMMANDED speed toward that by Strength (accel) and drive at
+            // exactly it - tracking the commanded speed on the mover (not reading the body's velocity) means
+            // damping or bumping other mobs can't bleed it away, so every target reels at the same rate. The
+            // physics solver still does the moving, so it collides and fires Collided on hitting something solid.
+            var desiredSpeed = MathF.Min(mover.Speed, dist / frameTime);
+            var accel = mover.Strength * frameTime;
+            mover.CurrentSpeed = mover.CurrentSpeed < desiredSpeed
+                ? MathF.Min(desiredSpeed, mover.CurrentSpeed + accel)
+                : MathF.Max(desiredSpeed, mover.CurrentSpeed - accel);
+            _physics.SetLinearVelocity(visual.Target, toDest / dist * mover.CurrentSpeed, body: targetPhysics);
         }
     }
 
@@ -275,7 +291,13 @@ public sealed class TetherLinkSystem : EntitySystem
             return;
 
         if (mover.Setup && Exists(target) && TryComp<PhysicsComponent>(target, out var targetPhysics))
+        {
+            // Kill the drive velocity before restoring the body type, so it doesn't fly off with whatever
+            // speed the reel had it at when released.
+            _physics.SetLinearVelocity(target, Vector2.Zero, body: targetPhysics);
+            _physics.SetAngularVelocity(target, 0f, body: targetPhysics);
             _physics.SetBodyType(target, mover.OriginalBodyType, body: targetPhysics);
+        }
 
         RemComp<TetherMoveTargetComponent>(target);
         RemCompDeferred<TetherMoverComponent>(tether);

@@ -1,0 +1,843 @@
+# _Persistence14: the Mobs-defense Paragon's content, generated from the roster in bastion_mobs.yml.
+# Three parts:
+#  1. Per-mob spawn EFFECTS - each names ONE guardian and spawns min..max of it (native RangeNumberSelector,
+#     so a node yields a small pack, minimum one, with NO reliance on EffectScale). The Mobs Paragon sets
+#     effectScale: 1 so the generic x-scaling doesn't multiply these.
+#  2. Node-effect TABLES (root/main/deep) - which mob-effects a node of each depth can roll, tiered by
+#     deadliness. This is how 'every node is a spawn node, deeper = deadlier' is expressed.
+#  3. Wave POOLS (weak/medium/deadly) - the defense wave picks ONE mob per roll from the tier its severity
+#     selects (see BastionDefenseMobsSystem).
+
+# =====================================================================================
+# 1. Per-mob spawn effects
+# =====================================================================================
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionGlockroach
+  description: Tears armed glockroaches into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionGlockroach
+        amount: !type:RangeNumberSelector
+          range: 2, 6
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionPurpleSnake
+  description: Tears venomous purple snakes into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionPurpleSnake
+        amount: !type:RangeNumberSelector
+          range: 2, 6
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionKobold
+  description: Tears scavenging kobolds into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionKobold
+        amount: !type:RangeNumberSelector
+          range: 2, 6
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionOreCrab
+  description: Tears ore crabs into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionOreCrab
+        amount: !type:RangeNumberSelector
+          range: 2, 6
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionCarp
+  description: Tears a school of space carp into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionCarp
+        amount: !type:RangeNumberSelector
+          range: 2, 6
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionCobra
+  description: Tears spitting space cobras into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionCobra
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionKangaroo
+  description: Tears boxing space kangaroos into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionKangaroo
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionGiantSpider
+  description: Tears giant spiders into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionGiantSpider
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionSpaceSpider
+  description: Tears space spiders into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionSpaceSpider
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionXenoDrone
+  description: Tears xenomorph drones into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionXenoDrone
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionXenoRunner
+  description: Tears xenomorph runners into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionXenoRunner
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionXenoSpitter
+  description: Tears xenomorph spitters into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionXenoSpitter
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionBasilisk
+  description: Tears basilisks into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionBasilisk
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionFleshGolem
+  description: Tears flesh golems into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionFleshGolem
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionFleshClamp
+  description: Tears flesh clamps into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionFleshClamp
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionGorilla
+  description: Tears enraged gorillas into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionGorilla
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionTomatoKiller
+  description: Tears killer tomatoes into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionTomatoKiller
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionLaserRaptor
+  description: Tears laser raptors into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionLaserRaptor
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionShark
+  description: Tears a space shark into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionShark
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionSlimeBlue
+  description: Tears angry blue slimes into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionSlimeBlue
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionSlimeGreen
+  description: Tears angry green slimes into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionSlimeGreen
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionSlimeYellow
+  description: Tears angry yellow slimes into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionSlimeYellow
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionIronCrab
+  description: Tears iron crabs into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionIronCrab
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionGoldCrab
+  description: Tears gold crabs into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionGoldCrab
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionArgocyteSwiper
+  description: Tears argocyte swipers into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionArgocyteSwiper
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionArgocyteGlider
+  description: Tears argocyte gliders into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionArgocyteGlider
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionBearSpace
+  description: Tears a space bear into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionBearSpace
+        amount: !type:RangeNumberSelector
+          range: 1, 3
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionGoliath
+  description: Tears a goliath into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionGoliath
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionHivelord
+  description: Tears a hivelord into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionHivelord
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionAbomination
+  description: Tears an abomination into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionAbomination
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionHellspawn
+  description: Tears a hellspawn into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionHellspawn
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionXenoRavager
+  description: Tears a xenomorph ravager into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionXenoRavager
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionXenoPraetorian
+  description: Tears a xenomorph praetorian into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionXenoPraetorian
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionClownSpider
+  description: Tears a clown spider into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionClownSpider
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionUraniumCrab
+  description: Tears a uranium crab into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionUraniumCrab
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionFleshJared
+  description: Tears Jared, of the flesh into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionFleshJared
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionArgocyteEnforcer
+  description: Tears an argocyte enforcer into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionArgocyteEnforcer
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+- type: entity
+  parent: BaseXenoArtifactEffect
+  id: XenoArtifactEffectBastionCarpMagic
+  description: Tears a magicarp into being.
+  components:
+  - type: XAEApplyComponents
+    applyIfAlreadyHave: true
+    refreshOnReactivate: true
+    components:
+    - type: EntityTableSpawner
+      deleteSpawnerAfterSpawn: false
+      spawnDetached: true
+      offset: 1.5
+      table: !type:EntSelector
+        id: MobBastionCarpMagic
+        amount: !type:RangeNumberSelector
+          range: 1, 2
+
+# =====================================================================================
+# 2. Node-effect tables (depth-tiered: root=weak, main=medium, deep=deadly)
+# =====================================================================================
+- type: entityTable
+  id: BastionParagonMobEffectsRoot
+  table: !type:GroupSelector
+    children:
+    - id: XenoArtifactEffectBastionGlockroach
+      weight: 1
+    - id: XenoArtifactEffectBastionPurpleSnake
+      weight: 1
+    - id: XenoArtifactEffectBastionKobold
+      weight: 1
+    - id: XenoArtifactEffectBastionOreCrab
+      weight: 1
+    - id: XenoArtifactEffectBastionCarp
+      weight: 1
+- type: entityTable
+  id: BastionParagonMobEffectsMain
+  table: !type:GroupSelector
+    children:
+    - id: XenoArtifactEffectBastionCobra
+      weight: 1
+    - id: XenoArtifactEffectBastionKangaroo
+      weight: 1
+    - id: XenoArtifactEffectBastionGiantSpider
+      weight: 1
+    - id: XenoArtifactEffectBastionSpaceSpider
+      weight: 1
+    - id: XenoArtifactEffectBastionXenoDrone
+      weight: 1
+    - id: XenoArtifactEffectBastionXenoRunner
+      weight: 1
+    - id: XenoArtifactEffectBastionXenoSpitter
+      weight: 1
+    - id: XenoArtifactEffectBastionBasilisk
+      weight: 1
+    - id: XenoArtifactEffectBastionFleshGolem
+      weight: 1
+    - id: XenoArtifactEffectBastionFleshClamp
+      weight: 1
+    - id: XenoArtifactEffectBastionGorilla
+      weight: 1
+    - id: XenoArtifactEffectBastionTomatoKiller
+      weight: 1
+    - id: XenoArtifactEffectBastionLaserRaptor
+      weight: 1
+    - id: XenoArtifactEffectBastionShark
+      weight: 1
+    - id: XenoArtifactEffectBastionSlimeBlue
+      weight: 1
+    - id: XenoArtifactEffectBastionSlimeGreen
+      weight: 1
+    - id: XenoArtifactEffectBastionSlimeYellow
+      weight: 1
+    - id: XenoArtifactEffectBastionIronCrab
+      weight: 1
+    - id: XenoArtifactEffectBastionGoldCrab
+      weight: 1
+    - id: XenoArtifactEffectBastionArgocyteSwiper
+      weight: 1
+    - id: XenoArtifactEffectBastionArgocyteGlider
+      weight: 1
+    - id: XenoArtifactEffectBastionBearSpace
+      weight: 1
+- type: entityTable
+  id: BastionParagonMobEffectsDeep
+  table: !type:GroupSelector
+    children:
+    - id: XenoArtifactEffectBastionGoliath
+      weight: 1
+    - id: XenoArtifactEffectBastionHivelord
+      weight: 1
+    - id: XenoArtifactEffectBastionAbomination
+      weight: 1
+    - id: XenoArtifactEffectBastionHellspawn
+      weight: 1
+    - id: XenoArtifactEffectBastionXenoRavager
+      weight: 1
+    - id: XenoArtifactEffectBastionXenoPraetorian
+      weight: 1
+    - id: XenoArtifactEffectBastionClownSpider
+      weight: 1
+    - id: XenoArtifactEffectBastionUraniumCrab
+      weight: 1
+    - id: XenoArtifactEffectBastionFleshJared
+      weight: 1
+    - id: XenoArtifactEffectBastionArgocyteEnforcer
+      weight: 1
+    - id: XenoArtifactEffectBastionCarpMagic
+      weight: 1
+
+# =====================================================================================
+# 3. Wave pools (defense mechanism picks ONE mob per roll)
+# =====================================================================================
+- type: entityTable
+  id: BastionMobPoolWeak
+  table: !type:GroupSelector
+    children:
+    - id: MobBastionGlockroach
+      weight: 1
+    - id: MobBastionPurpleSnake
+      weight: 1
+    - id: MobBastionKobold
+      weight: 1
+    - id: MobBastionOreCrab
+      weight: 1
+    - id: MobBastionCarp
+      weight: 1
+- type: entityTable
+  id: BastionMobPoolMedium
+  table: !type:GroupSelector
+    children:
+    - id: MobBastionCobra
+      weight: 1
+    - id: MobBastionKangaroo
+      weight: 1
+    - id: MobBastionGiantSpider
+      weight: 1
+    - id: MobBastionSpaceSpider
+      weight: 1
+    - id: MobBastionXenoDrone
+      weight: 1
+    - id: MobBastionXenoRunner
+      weight: 1
+    - id: MobBastionXenoSpitter
+      weight: 1
+    - id: MobBastionBasilisk
+      weight: 1
+    - id: MobBastionFleshGolem
+      weight: 1
+    - id: MobBastionFleshClamp
+      weight: 1
+    - id: MobBastionGorilla
+      weight: 1
+    - id: MobBastionTomatoKiller
+      weight: 1
+    - id: MobBastionLaserRaptor
+      weight: 1
+    - id: MobBastionShark
+      weight: 1
+    - id: MobBastionSlimeBlue
+      weight: 1
+    - id: MobBastionSlimeGreen
+      weight: 1
+    - id: MobBastionSlimeYellow
+      weight: 1
+    - id: MobBastionIronCrab
+      weight: 1
+    - id: MobBastionGoldCrab
+      weight: 1
+    - id: MobBastionArgocyteSwiper
+      weight: 1
+    - id: MobBastionArgocyteGlider
+      weight: 1
+    - id: MobBastionBearSpace
+      weight: 1
+- type: entityTable
+  id: BastionMobPoolDeadly
+  table: !type:GroupSelector
+    children:
+    - id: MobBastionGoliath
+      weight: 1
+    - id: MobBastionHivelord
+      weight: 1
+    - id: MobBastionAbomination
+      weight: 1
+    - id: MobBastionHellspawn
+      weight: 1
+    - id: MobBastionXenoRavager
+      weight: 1
+    - id: MobBastionXenoPraetorian
+      weight: 1
+    - id: MobBastionClownSpider
+      weight: 1
+    - id: MobBastionUraniumCrab
+      weight: 1
+    - id: MobBastionFleshJared
+      weight: 1
+    - id: MobBastionArgocyteEnforcer
+      weight: 1
+    - id: MobBastionCarpMagic
+      weight: 1

@@ -38,6 +38,31 @@
   - AllHostile
   - Wizard
 
+# _Persistence14: the Bastion Ruin's guardians (Paragon nodes + the Mobs defense wave). One team,
+# hostile to everything EXCEPT itself and the eye-anomaly hivemind (EyeThrall), which it allies with.
+# Aggro is driven by a mob's own hostile list (NpcFactionSystem.GetNearbyHostiles), so listing every
+# other faction here is what makes them attack all comers; EyeThrall is omitted (and marked friendly)
+# so eye thralls and Bastion mobs ignore each other.
+- type: npcFaction
+  id: ParagonBastion
+  friendly:
+  - EyeThrall
+  hostile:
+  - NanoTrasen
+  - PetsNT
+  - SimpleHostile
+  - SimpleNeutral
+  - Passive
+  - Mouse
+  - Syndicate
+  - Xeno
+  - Zombie
+  - Revolutionary
+  - AllHostile
+  - Wizard
+  - Dragon
+  - Xenoborg
+
 - type: npcFaction
   id: Passive
 
