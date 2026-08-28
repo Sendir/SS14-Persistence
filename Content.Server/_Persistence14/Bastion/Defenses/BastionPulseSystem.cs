@@ -10,8 +10,9 @@ namespace Content.Server._Persistence14.Bastion.Defenses;
 /// <summary>
 /// Drives the Paragon's defense-pulse clock: counts down only while a player is within range (dormant
 /// otherwise), updates the console descriptor for the current band, and fires <see cref="BastionDefensePulseEvent"/>
-/// on timeout - or early, if the current band allows an early discharge. The pulse severity scales with
-/// how much of the Paragon's graph is unlocked. Defenses are still empty, so a pulse currently no-ops.
+/// on timeout - or early, if the current band allows an early discharge. The pulse severity scales with how
+/// much of the Paragon's graph is unlocked; the active defense (A/B/C) handles the event. Once the Paragon
+/// is fully unlocked the defense shuts off for good and the timer parks.
 /// </summary>
 public sealed class BastionPulseSystem : EntitySystem
 {
@@ -30,7 +31,7 @@ public sealed class BastionPulseSystem : EntitySystem
         var query = EntityQueryEnumerator<BastionPulseComponent, XenoArtifactComponent>();
         while (query.MoveNext(out var uid, out var pulse, out var xeno))
         {
-            var severity = GetSeverity((uid, xeno));
+            var severity = _xenoArtifact.GetUnlockedFraction((uid, xeno));
 
             // Fully unlocked: the Paragon is beaten, so the defense shuts off for good. Park the timer.
             if (severity >= 1f)
@@ -66,21 +67,6 @@ public sealed class BastionPulseSystem : EntitySystem
 
             SetReadout(uid, pulse, band?.Descriptor, dormant: false);
         }
-    }
-
-    /// <summary>Fraction of the Paragon's nodes that are unlocked, 0..1 - used as the defense intensity knob.</summary>
-    private float GetSeverity(Entity<XenoArtifactComponent> xeno)
-    {
-        var total = 0;
-        var unlocked = 0;
-        foreach (var node in _xenoArtifact.GetAllNodes(xeno))
-        {
-            total++;
-            if (!node.Comp.Locked)
-                unlocked++;
-        }
-
-        return total == 0 ? 0f : (float)unlocked / total;
     }
 
     /// <summary>The interval until the next pulse: a random value in [min, max] if both are set, else the fixed one.</summary>

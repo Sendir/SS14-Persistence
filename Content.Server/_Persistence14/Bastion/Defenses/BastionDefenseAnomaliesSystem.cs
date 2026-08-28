@@ -77,7 +77,12 @@ public sealed class BastionDefenseAnomaliesSystem : BaseBastionDefenseSystem<Bas
         var marker = AddComp<BastionAnomalyComponent>(spawned);
         _pid.AssignIdReference(ref marker.Paragon, ent.Owner);
         _pid.AssignIdReference(ref marker.Tether, args.Tether);
-        marker.RampPerSecond = comp.MinRampPerSecond + (comp.MaxRampPerSecond - comp.MinRampPerSecond) * GetSeverity(ent.Owner);
+        // Recompute severity here (not the pulse's stale value): the tether reach takes a couple of seconds,
+        // over which the players may have unlocked more of the graph.
+        var severity = TryComp<XenoArtifactComponent>(ent.Owner, out var xeno)
+            ? _xenoArtifact.GetUnlockedFraction((ent.Owner, xeno))
+            : 0f;
+        marker.RampPerSecond = comp.MinRampPerSecond + (comp.MaxRampPerSecond - comp.MinRampPerSecond) * severity;
 
         if (isTrap)
         {
@@ -94,24 +99,6 @@ public sealed class BastionDefenseAnomaliesSystem : BaseBastionDefenseSystem<Bas
         marker.GrowStartedAt = now;
         marker.PhaseEndsAt = now + comp.GrowDuration;
         _scale.SetSpriteScale(spawned, Vector2.One * comp.StartScale);
-    }
-
-    /// <summary>Fraction of the Paragon's graph unlocked - the same severity the pulse uses, recomputed at connect.</summary>
-    private float GetSeverity(EntityUid paragon)
-    {
-        if (!TryComp<XenoArtifactComponent>(paragon, out var xeno))
-            return 0f;
-
-        var total = 0;
-        var unlocked = 0;
-        foreach (var node in _xenoArtifact.GetAllNodes((paragon, xeno)))
-        {
-            total++;
-            if (!node.Comp.Locked)
-                unlocked++;
-        }
-
-        return total == 0 ? 0f : (float)unlocked / total;
     }
 
     /// <summary>
@@ -138,9 +125,7 @@ public sealed class BastionDefenseAnomaliesSystem : BaseBastionDefenseSystem<Bas
         if (available <= 0)
             return; // already at the cap; let the field crit itself out before growing more
 
-        var severity = Math.Clamp(args.Severity, 0f, 1f);
-        var count = Math.Max(1, (int)MathF.Round(comp.MinCount + (comp.MaxCount - comp.MinCount) * severity));
-        count = Math.Min(count, available);
+        var count = Math.Min(GetWaveCount(comp, args.Severity), available);
 
         var centre = _transform.GetMapCoordinates(ent.Owner);
 

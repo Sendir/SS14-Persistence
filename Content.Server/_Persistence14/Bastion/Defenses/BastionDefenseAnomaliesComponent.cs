@@ -25,15 +25,7 @@ public sealed partial class BastionDefenseAnomaliesComponent : BastionDefenseCom
     [DataField]
     public EntProtoId AnomalySpawner = "RandomAnomalySpawner";
 
-    // --- Wave size ---
-
-    /// <summary>Anomalies grown at minimum severity (Paragon fully locked).</summary>
-    [DataField]
-    public int MinCount = 1;
-
-    /// <summary>Anomalies grown at maximum severity (Paragon fully unlocked).</summary>
-    [DataField]
-    public int MaxCount = 3;
+    // --- Wave size (MinCount/MaxCount are on the base BastionDefenseComponent) ---
 
     /// <summary>Cap on simultaneously-live defense anomalies for this Paragon, so stacked pulses can't flood.</summary>
     [DataField]

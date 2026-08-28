@@ -36,15 +36,7 @@ public sealed partial class BastionDefenseMobsComponent : BastionDefenseComponen
     [DataField]
     public float DeadlySeverity = 0.67f;
 
-    // --- Wave size ---
-
-    /// <summary>Mobs summoned at minimum severity (Paragon fully locked).</summary>
-    [DataField]
-    public int MinCount = 1;
-
-    /// <summary>Mobs summoned at maximum severity (Paragon fully unlocked).</summary>
-    [DataField]
-    public int MaxCount = 5;
+    // --- Wave size (MinCount/MaxCount are on the base BastionDefenseComponent) ---
 
     /// <summary>Cap on simultaneously-alive wave mobs, so a 10-minute ruin can't flood. Node-spawned mobs don't count.</summary>
     [DataField]

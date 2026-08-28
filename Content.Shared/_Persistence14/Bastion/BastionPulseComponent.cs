@@ -8,10 +8,8 @@ namespace Content.Shared._Persistence14.Bastion;
 /// <see cref="ActivationRange"/> (otherwise it lies dormant), and fires a defense pulse when the timer
 /// runs out - or earlier, if the timer is sitting in a band that allows an early discharge. The
 /// console reads <see cref="CurrentDescriptor"/> to show a qualitative "how close is the next pulse"
-/// readout. Everything is data-driven via <see cref="Bands"/>.
-///
-/// The pulse itself is wired (it raises the defense event) but the defenses are still empty, so a pulse
-/// currently does nothing visible.
+/// readout. Everything is data-driven via <see cref="Bands"/>. Each pulse raises
+/// <c>BastionDefensePulseEvent</c>, which the Paragon's active defense (A/B/C) acts on.
 /// </summary>
 [RegisterComponent, NetworkedComponent, AutoGenerateComponentState, AutoGenerateComponentPause]
 public sealed partial class BastionPulseComponent : Component
@@ -43,7 +41,7 @@ public sealed partial class BastionPulseComponent : Component
 
     /// <summary>Players must be within this many tiles for the Paragon to charge and pulse; else it lies dormant.</summary>
     [DataField]
-    public float ActivationRange = 100f;
+    public float ActivationRange = 20f;
 
     /// <summary>Console text shown while dormant (no players in range).</summary>
     [DataField]

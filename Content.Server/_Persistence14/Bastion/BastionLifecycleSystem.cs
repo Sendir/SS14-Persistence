@@ -48,24 +48,11 @@ public sealed class BastionLifecycleSystem : EntitySystem
 
             // Completion (whole graph unlocked) gets the grace window + console countdown; lifetime expiry
             // tears down at once.
-            if (AllNodesUnlocked((uid, xeno)))
+            if (_xenoArtifact.GetUnlockedFraction((uid, xeno)) >= 1f)
                 BeginTeardown((uid, life), life.CompletionGrace);
             else if (now >= life.ExpireTime)
                 BeginTeardown((uid, life), TimeSpan.Zero);
         }
-    }
-
-    private bool AllNodesUnlocked(Entity<XenoArtifactComponent> ent)
-    {
-        var any = false;
-        foreach (var node in _xenoArtifact.GetAllNodes(ent))
-        {
-            any = true;
-            if (node.Comp.Locked)
-                return false;
-        }
-
-        return any;
     }
 
     private void BeginTeardown(Entity<BastionLifecycleComponent> ent, TimeSpan grace)

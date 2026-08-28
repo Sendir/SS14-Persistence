@@ -54,15 +54,6 @@ public sealed class BastionRuinSystem : EntitySystem
     /// <summary>The floor the platform is made of.</summary>
     private const string RuinFloorTile = "FloorAsteroidSand";
 
-    /// <summary>
-    /// TESTING marker: a one-tile-thick ring of a distinct floor laid this many tiles from the Paragon,
-    /// roughly at the edge of the dormancy range (BastionPulse.activationRange) so a tester can see where
-    /// the defense stops reacting. Purely cosmetic.
-    /// </summary>
-    private const float DormantRingRadius = 6f;
-
-    private const string DormantRingTile = "FloorSteel";
-
     /// <summary>Tiles of slack added around the map's inhabited region, so the ruin can also land a bit out in the void beyond the outermost grids.</summary>
     private const float SpawnRegionMargin = 100f;
 
@@ -94,18 +85,14 @@ public sealed class BastionRuinSystem : EntitySystem
         EnsureComp<GridAtmosphereComponent>(gridEnt.Owner);
 
         // Tiles span [-RuinHalfSize, RuinHalfSize) so the platform's world extent is symmetric about the
-        // tile corner (0,0) - that corner is the field's dead centre, where the 2x2 Paragon goes. Tiles whose
-        // centre falls in the dormancy-ring band get a distinct floor as a visual marker.
+        // tile corner (0,0) - that corner is the field's dead centre, where the 2x2 Paragon goes.
         var floor = new Tile(_tileDefManager[RuinFloorTile].TileId);
-        var ring = new Tile(_tileDefManager[DormantRingTile].TileId);
         for (var x = -RuinHalfSize; x < RuinHalfSize; x++)
         {
             for (var y = -RuinHalfSize; y < RuinHalfSize; y++)
             {
                 var tileCoords = new Vector2i(x, y);
-                var dist = MathF.Sqrt((x + 0.5f) * (x + 0.5f) + (y + 0.5f) * (y + 0.5f));
-                var onRing = dist >= DormantRingRadius - 0.5f && dist < DormantRingRadius + 0.5f;
-                _map.SetTile(gridEnt.Owner, gridEnt.Comp, tileCoords, onRing ? ring : floor);
+                _map.SetTile(gridEnt.Owner, gridEnt.Comp, tileCoords, floor);
                 _atmosphere.InvalidateTile(gridEnt.Owner, tileCoords);
             }
         }

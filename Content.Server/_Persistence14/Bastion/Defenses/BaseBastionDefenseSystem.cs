@@ -19,6 +19,17 @@ public abstract class BaseBastionDefenseSystem<T> : EntitySystem where T : Basti
 
     /// <summary>Runs the defense for one pulse, at the given <see cref="BastionDefensePulseEvent.Severity"/>.</summary>
     protected abstract void OnPulse(Entity<T> ent, ref BastionDefensePulseEvent args);
+
+    /// <summary>
+    /// How many things this defense summons for one pulse: lerps <see cref="BastionDefenseComponent.MinCount"/>
+    /// to <see cref="BastionDefenseComponent.MaxCount"/> by <paramref name="severity"/> (clamped 0..1), rounded,
+    /// and never below 1 so every pulse does something. Shared so the three defenses can't scale differently.
+    /// </summary>
+    protected static int GetWaveCount(BastionDefenseComponent comp, float severity)
+    {
+        severity = Math.Clamp(severity, 0f, 1f);
+        return Math.Max(1, (int)MathF.Round(comp.MinCount + (comp.MaxCount - comp.MinCount) * severity));
+    }
 }
 
 /// <summary>

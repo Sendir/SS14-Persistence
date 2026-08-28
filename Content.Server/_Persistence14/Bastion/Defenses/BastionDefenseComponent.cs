@@ -15,4 +15,16 @@ public abstract partial class BastionDefenseComponent : Component
     /// </summary>
     [DataField]
     public float Weight = 1f;
+
+    /// <summary>
+    /// Things summoned per pulse at minimum severity (Paragon fully locked). The actual count is lerped
+    /// between this and <see cref="MaxCount"/> by severity - see <c>BaseBastionDefenseSystem.GetWaveCount</c>.
+    /// The per-defense values live on the prototypes so they can be balanced without code changes.
+    /// </summary>
+    [DataField]
+    public int MinCount = 1;
+
+    /// <summary>Things summoned per pulse at maximum severity (Paragon fully unlocked). See <see cref="MinCount"/>.</summary>
+    [DataField]
+    public int MaxCount = 1;
 }

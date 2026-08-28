@@ -113,7 +113,7 @@
     pulseInterval: 30
     pulseIntervalMin: 10
     pulseIntervalMax: 30
-    activationRange: 5 # TESTING: dormant unless a player is within 5 tiles (raise before shipping)
+    activationRange: 20 # dormant unless a player is within 20 tiles of the Paragon
     bands:
     - descriptor: bastion-pulse-distant   # 20s+ out
       from: 20
@@ -215,6 +215,8 @@
       map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
       visible: false
   - type: BastionDefenseArtifacts
+    minCount: 1
+    maxCount: 8
 
 - type: entity
   parent: StructureParagonArtifact
@@ -241,6 +243,8 @@
       map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
       visible: false
   - type: BastionDefenseAnomalies
+    minCount: 1
+    maxCount: 3
 
 - type: entity
   parent: StructureParagonArtifact
@@ -278,6 +282,8 @@
     deepEffectsTable: !type:NestedSelector
       tableId: BastionParagonMobEffectsDeep
   - type: BastionDefenseMobs
+    minCount: 1
+    maxCount: 5
 
 # --- Defense A payload: the artifacts the Artifacts-defense Paragon flings out. A structure artifact
 # (parent ComplexXenoArtifact => non-handheld effect tables, so it can NEVER roll the resync effect and

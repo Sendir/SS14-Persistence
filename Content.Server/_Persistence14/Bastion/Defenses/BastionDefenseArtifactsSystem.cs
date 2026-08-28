@@ -52,7 +52,7 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
             return; // a wave is still live; ignore this pulse
 
         var severity = Math.Clamp(args.Severity, 0f, 1f);
-        var count = Math.Max(1, (int)MathF.Round(comp.MinCount + (comp.MaxCount - comp.MinCount) * severity));
+        var count = GetWaveCount(comp, severity);
         var centre = _transform.GetMapCoordinates(ent.Owner);
 
         for (var i = 0; i < count; i++)

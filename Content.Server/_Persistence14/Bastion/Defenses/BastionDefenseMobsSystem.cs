@@ -67,8 +67,7 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
             return; // already at the cap; let the field thin out before summoning more
 
         var severity = Math.Clamp(args.Severity, 0f, 1f);
-        var count = Math.Max(1, (int)MathF.Round(comp.MinCount + (comp.MaxCount - comp.MinCount) * severity));
-        count = Math.Min(count, available);
+        var count = Math.Min(GetWaveCount(comp, severity), available);
 
         var pool = severity >= comp.DeadlySeverity ? comp.DeadlyPool
                  : severity >= comp.MediumSeverity ? comp.MediumPool

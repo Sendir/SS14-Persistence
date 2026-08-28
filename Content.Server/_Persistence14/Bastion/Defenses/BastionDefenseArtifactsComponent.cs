@@ -18,13 +18,7 @@ public sealed partial class BastionDefenseArtifactsComponent : BastionDefenseCom
     [DataField]
     public EntProtoId ArtifactProto = "StructureBastionDefenseArtifact";
 
-    /// <summary>Artifacts spawned at minimum severity (Paragon fully locked).</summary>
-    [DataField]
-    public int MinCount = 1;
-
-    /// <summary>Artifacts spawned at maximum severity (Paragon fully unlocked).</summary>
-    [DataField]
-    public int MaxCount = 8;
+    // MinCount/MaxCount are on the base BastionDefenseComponent.
 
     /// <summary>
     /// Random fling distance range (tiles from the Paragon centre). Kept inside the ruin platform
