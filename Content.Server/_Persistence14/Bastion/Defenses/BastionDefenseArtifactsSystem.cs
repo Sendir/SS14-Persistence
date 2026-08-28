@@ -1,5 +1,6 @@
 using System.Linq;
 using Content.Server.Tether;
+using Content.Shared._Persistence14.PersistentIdentifier;
 using Content.Shared.Movement.Components;
 using Content.Shared.Movement.Pulling.Components;
 using Content.Shared.Xenoarchaeology.Artifact;
@@ -34,6 +35,7 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
     [Dependency] private readonly TetherLinkSystem _tether = default!;
     [Dependency] private readonly SharedXenoArtifactSystem _xenoArtifact = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
+    [Dependency] private readonly PersistentIdentifierSystem _pid = default!;
 
     public override void Initialize()
     {
@@ -74,7 +76,11 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
             var distance = _random.NextFloat(comp.MinFlingDistance, comp.MaxFlingDistance);
             _tether.TetherDrive(tether, distance, angle);
 
-            comp.Active.Add(new BastionDefenseArtifactEntry { Artifact = artifact, Tether = tether });
+            comp.Active.Add(new BastionDefenseArtifactEntry
+            {
+                Artifact = _pid.EnsureId(artifact),
+                Tether = _pid.EnsureId(tether),
+            });
         }
 
         comp.Phase = BastionDefenseArtifactsPhase.Holding;
@@ -117,7 +123,10 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
     {
         // Copy first: BreakLink -> OnLinkBroken mutates Active as we go.
         foreach (var entry in ent.Comp.Active.ToList())
-            _tether.BreakLink(entry.Tether);
+        {
+            if (_pid.TryResolveId(entry.Tether, out var tether))
+                _tether.BreakLink(tether.Owner);
+        }
 
         // OnLinkBroken flips the phase to Idle once Active empties; guard against any that failed to break.
         if (ent.Comp.Active.Count == 0)
@@ -129,11 +138,13 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
     {
         foreach (var entry in ent.Comp.Active)
         {
-            PulseArtifact(entry.Artifact);
+            if (_pid.TryResolveId(entry.Artifact, out var artifact))
+                PulseArtifact(artifact.Owner);
 
             // Re-drive the same tether inward to the centre (ReelDistance 0 = onto the Paragon). Keep the
             // existing spoke angle so each returns straight along its own line.
-            _tether.TetherDrive(entry.Tether, ent.Comp.ReelDistance);
+            if (_pid.TryResolveId(entry.Tether, out var tether))
+                _tether.TetherDrive(tether.Owner, ent.Comp.ReelDistance);
         }
 
         ent.Comp.Phase = BastionDefenseArtifactsPhase.Reeling;
@@ -167,7 +178,7 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
             return; // the fling-out also reports Reached; only react while reeling in
 
         var tether = args.Tether;
-        if (ent.Comp.Active.Any(e => e.Tether == tether))
+        if (ent.Comp.Active.Any(e => _pid.CompareId(e.Tether, tether)))
             _tether.BreakLink(tether); // reeled home -> break -> OnLinkBroken deletes it
     }
 
@@ -178,12 +189,12 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
     private void OnLinkBroken(Entity<BastionDefenseArtifactsComponent> ent, ref TetherLinkBrokenEvent args)
     {
         var tether = args.Tether;
-        var entry = ent.Comp.Active.FirstOrDefault(e => e.Tether == tether);
+        var entry = ent.Comp.Active.FirstOrDefault(e => _pid.CompareId(e.Tether, tether));
         if (entry is null)
             return;
 
-        if (Exists(entry.Artifact))
-            QueueDel(entry.Artifact);
+        if (_pid.TryResolveId(entry.Artifact, out var artifact))
+            QueueDel(artifact.Owner);
 
         // Delete the tether visual now too, rather than letting it play out its disconnect animation: it
         // still points at the artifact we just deleted, and a lingering tether whose target is gone spams

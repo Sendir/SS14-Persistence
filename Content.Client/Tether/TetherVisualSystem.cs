@@ -34,26 +34,36 @@ public sealed class TetherVisualSystem : EntitySystem
         var query = EntityQueryEnumerator<TetherVisualComponent, SpriteComponent>();
         while (query.MoveNext(out var uid, out var tether, out var sprite))
         {
-            if (!Exists(tether.Source) || !Exists(tether.Target))
-                continue; // server will clean this up shortly, nothing to render meaningfully
+            if (!Exists(tether.Source))
+                continue; // no anchor to draw from; server will clean this up shortly
 
             var sourceCoords = _transform.GetMapCoordinates(tether.Source);
             MapCoordinates targetCoords;
 
             if (tether.DisconnectStartedAt != null)
             {
-                // Disconnecting - use a frozen snapshot of where the target was the moment
-                // disconnection began, rather than continuing to track their live position.
-                // Otherwise a victim who keeps moving after the tether breaks would drag the
-                // retracting tether along with them, which reads as the tether never actually
-                // letting go. Source has no equivalent freeze - it's a fixed anchor point
-                // (the eye anomaly) that tethers always come and go from.
-                tether.FrozenTargetCoords ??= _transform.GetMapCoordinates(tether.Target);
-                targetCoords = tether.FrozenTargetCoords.Value;
+                // Disconnecting - anchor the retract to LastKnownTargetCoords, the server's networked
+                // snapshot of where the target was when the tether broke (it stopped updating at that moment).
+                // This keeps the tether from chasing a victim who keeps moving after the break, and, crucially,
+                // survives the target ENTITY being deleted (a vaporized anomaly) - the live Target ref is
+                // Invalid by now. Source has no equivalent freeze - it's a fixed anchor point (the eye anomaly)
+                // that tethers always come and go from.
+                if (tether.LastKnownTargetCoords is not { } snapshot)
+                    continue; // no anchor to retract toward - nothing sane to draw
+                targetCoords = snapshot;
+            }
+            else if (Exists(tether.Target))
+            {
+                targetCoords = _transform.GetMapCoordinates(tether.Target);
+            }
+            else if (tether.TargetCoords is { } reachCoords)
+            {
+                // Reaching toward a fixed point with no target entity yet (spawn-on-arrival pattern).
+                targetCoords = reachCoords;
             }
             else
             {
-                targetCoords = _transform.GetMapCoordinates(tether.Target);
+                continue; // still connected but target vanished; server will retract/clean it up shortly
             }
 
             if (sourceCoords.MapId != targetCoords.MapId)

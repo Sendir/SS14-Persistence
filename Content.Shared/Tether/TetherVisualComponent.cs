@@ -20,6 +20,15 @@ public sealed partial class TetherVisualComponent : Component
     public EntityUid Target;
 
     /// <summary>
+    /// A fixed map position the tether reaches toward while it has NO <see cref="Target"/> entity yet - the
+    /// "reach out to empty space, then spawn the thing on arrival" pattern. While this is set (and Target is
+    /// invalid) the tether draws to this point and its missing target is NOT treated as "gone". Cleared once a
+    /// real Target is attached (see Content.Server.Tether.TetherLinkSystem.AttachTarget).
+    /// </summary>
+    [DataField, AutoNetworkedField]
+    public MapCoordinates? TargetCoords;
+
+    /// <summary>
     /// How many short segments the tether is built from. Each is an individual sprite layer
     /// (declared in the entity's prototype - there must be at least this many layers, extras are
     /// simply left unused), independently positioned/rotated/scaled every client frame to trace
@@ -110,13 +119,16 @@ public sealed partial class TetherVisualComponent : Component
     public TimeSpan? DisconnectStartedAt;
 
     /// <summary>
-    /// CLIENT-ONLY runtime state, not a data field - captured the first frame this client
-    /// observes DisconnectStartedAt set, snapshotting Target's position at that exact moment.
-    /// Used for the rest of the retract animation instead of Target's live position, so a
-    /// tether retracts toward where its victim WAS when it broke, rather than continuing to
-    /// chase them if they keep moving afterward. Source has no equivalent freeze - it's assumed
-    /// to be a fixed anchor point tethers always come and go from (e.g. the eye anomaly itself),
-    /// so tracking it live is fine even mid-retract.
+    /// Target's last-known map position, kept continuously up to date SERVER-side (see
+    /// Content.Server.Tether.TetherVisualSystem) and networked. While the tether is connected it's
+    /// overwritten every tick with Target's live position, then it stops updating the moment disconnection
+    /// begins - so it naturally freezes at where the target was when the tether broke (the retract anchors
+    /// here rather than chasing a victim who keeps moving). Crucially it also survives the target ENTITY
+    /// being deleted (an anomaly vaporizing itself in a supercritical): the last value stays as a fallback,
+    /// and the server clears the now-dangling <see cref="Target"/> ref to <see cref="EntityUid.Invalid"/> on
+    /// disconnect (so PVS never tries to network a deleted entity - the "can't resolve MetaDataComponent"
+    /// spam), leaving the client to anchor the retract to this snapshot instead of the gone entity.
     /// </summary>
-    public MapCoordinates? FrozenTargetCoords;
+    [DataField, AutoNetworkedField]
+    public MapCoordinates? LastKnownTargetCoords;
 }

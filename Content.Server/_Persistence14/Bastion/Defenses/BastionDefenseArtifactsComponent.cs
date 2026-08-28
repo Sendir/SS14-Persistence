@@ -1,3 +1,4 @@
+using Content.Shared._Persistence14.PersistentIdentifier.Reference;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
 
@@ -107,13 +108,17 @@ public enum BastionDefenseArtifactsPhase : byte
     Reeling,
 }
 
-/// <summary>One spawned defensive artifact and the tether binding it to the Paragon.</summary>
+/// <summary>
+/// One spawned defensive artifact and the tether binding it to the Paragon. Both are
+/// <see cref="PersistentEntityReference"/> so a mid-wave save/reload restores the roster with correct links
+/// rather than reassigned UIDs (the wave then reels and deletes them on the next phase as normal).
+/// </summary>
 [DataDefinition]
 public sealed partial class BastionDefenseArtifactEntry
 {
     [DataField]
-    public EntityUid Artifact;
+    public PersistentEntityReference Artifact;
 
     [DataField]
-    public EntityUid Tether;
+    public PersistentEntityReference Tether;
 }

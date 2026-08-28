@@ -5,6 +5,7 @@ using Content.Client.UserInterface.Controls;
 using Content.Client.Xenoarchaeology.Artifact;
 using Content.Client.Xenoarchaeology.Equipment;
 using Content.Shared._Persistence14.Bastion;
+using Content.Shared._Persistence14.PersistentIdentifier;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
 using Content.Shared.Xenoarchaeology.Equipment.Components;
 using Robust.Client.Audio;
@@ -206,10 +207,12 @@ public sealed partial class AnalysisConsoleMenu : FancyWindow
         if (arti is { } lockedArti && lockedArti.Comp.Suppressed)
         {
             LockedScreen.Visible = true;
+            // Resolve the key through the persistent-id registry (the pointer is a PersistentEntityReference
+            // so it survives save/reload); if it can't resolve, just hide the silhouette.
             if (_ent.TryGetComponent<ParagonKeyDisplayComponent>(lockedArti.Owner, out var keyDisplay)
-                && keyDisplay.Key is { } keyNet)
+                && _ent.System<PersistentIdentifierSystem>().TryResolveId(keyDisplay.Key, out var keyEnt))
             {
-                LockedKeyView.SetEntity(keyNet);
+                LockedKeyView.SetEntity(keyEnt.Owner);
                 LockedKeyView.Modulate = Color.FromHex("#6f6f88");
                 LockedKeyView.Visible = true;
             }

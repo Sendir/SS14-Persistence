@@ -1,3 +1,4 @@
+using Content.Shared._Persistence14.PersistentIdentifier.Reference;
 using Content.Shared.EntityTable;
 using Robust.Shared.Prototypes;
 using Robust.Shared.Serialization.TypeSerializers.Implementations.Custom;
@@ -53,9 +54,12 @@ public sealed partial class BastionDefenseMobsComponent : BastionDefenseComponen
     [DataField]
     public float SpawnRadius = 4f;
 
-    /// <summary>Live wave mobs, pruned as they die or despawn.</summary>
+    /// <summary>
+    /// Live wave mobs, pruned as they die or despawn. <see cref="PersistentEntityReference"/> entries so the
+    /// wave roster (and thus the live-mob cap) survives a save/reload instead of holding reassigned UIDs.
+    /// </summary>
     [DataField]
-    public List<EntityUid> Active = new();
+    public List<PersistentEntityReference> Active = new();
 
     // --- Space-rescue tether (applies to ALL Bastion mobs near the Paragon) ---
 

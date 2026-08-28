@@ -1,13 +1,14 @@
 namespace Content.Server._Persistence14.Bastion.Defenses;
 
 /// <summary>
-/// Base for a Bastion Ruin defense. Each defense is a marker/config component on the Paragon Artifact
-/// plus a subclass here that reacts to <see cref="BastionDefensePulseEvent"/> - the same "component +
-/// event + base system" shape as the artifact effects (BaseXAESystem). Adding a new defense later is:
-/// a new component, a new subclass, and adding the component to a Paragon variant.
+/// Base for a Bastion Ruin defense. Each defense is a marker/config component on the Paragon Artifact plus
+/// a subclass here that reacts to <see cref="BastionDefensePulseEvent"/> - the same "component + event + base
+/// system" shape as the artifact effects (BaseXAESystem). A new defense is a new component, a new subclass,
+/// and adding the component to a Paragon variant; the three shipped defenses are Artifacts (A), Anomalies
+/// (B), and Mobs (C).
 ///
-/// The framework is wired but currently dormant: nothing raises the pulse yet (that arrives with the
-/// controller/timer + dormancy work), and the per-defense <see cref="OnPulse"/> handlers are empty.
+/// The pulse itself is raised by <c>BastionPulseSystem</c> on a random interval while a player is near, with
+/// a severity scaled to how much of the Paragon's graph is unlocked.
 /// </summary>
 public abstract class BaseBastionDefenseSystem<T> : EntitySystem where T : BastionDefenseComponent
 {
@@ -16,14 +17,14 @@ public abstract class BaseBastionDefenseSystem<T> : EntitySystem where T : Basti
         SubscribeLocalEvent<T, BastionDefensePulseEvent>(OnPulse);
     }
 
-    /// <summary>Runs the defense for one pulse. Empty for now.</summary>
+    /// <summary>Runs the defense for one pulse, at the given <see cref="BastionDefensePulseEvent.Severity"/>.</summary>
     protected abstract void OnPulse(Entity<T> ent, ref BastionDefensePulseEvent args);
 }
 
 /// <summary>
-/// Raised on a Paragon Artifact when its defense should act once. Not raised yet - the controller that
-/// pulses it (on a timer, only while players are near) comes later. <see cref="Severity"/> is intended
-/// to scale each defense's intensity with how much of the Paragon's graph has been unlocked.
+/// Raised on a Paragon Artifact by <c>BastionPulseSystem</c> when its defense should act once.
+/// <see cref="Severity"/> is the fraction of the Paragon's graph unlocked (0..1), which each defense uses to
+/// scale its intensity (wave size, ramp rate, tier, etc.).
 /// </summary>
 [ByRefEvent]
 public readonly record struct BastionDefensePulseEvent(EntityUid Paragon, float Severity);

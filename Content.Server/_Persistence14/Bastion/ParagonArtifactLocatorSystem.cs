@@ -1,4 +1,5 @@
 using Content.Shared._Persistence14.Bastion;
+using Content.Shared._Persistence14.PersistentIdentifier;
 using Content.Shared.Hands.Components;
 using Robust.Shared.Audio.Systems;
 using Robust.Shared.Physics.Systems;
@@ -21,6 +22,7 @@ public sealed class ParagonArtifactLocatorSystem : EntitySystem
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly SharedPhysicsSystem _physics = default!;
     [Dependency] private readonly SharedAudioSystem _audio = default!;
+    [Dependency] private readonly PersistentIdentifierSystem _pid = default!;
 
     public override void Update(float frameTime)
     {
@@ -29,8 +31,9 @@ public sealed class ParagonArtifactLocatorSystem : EntitySystem
         var query = EntityQueryEnumerator<ParagonArtifactLocatorComponent, TransformComponent>();
         while (query.MoveNext(out var uid, out var locator, out var xform))
         {
-            if (locator.Target is not { } target || !Exists(target))
+            if (!_pid.TryResolveId(locator.Target, out var targetEnt))
                 continue;
+            var target = targetEnt.Owner;
 
             // Only beep while actually held by someone - a held item is parented to the holder mob,
             // which carries HandsComponent. On the ground or in a bag it stays silent.

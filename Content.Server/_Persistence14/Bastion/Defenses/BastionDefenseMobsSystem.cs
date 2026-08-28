@@ -1,6 +1,7 @@
 using System.Numerics;
 using Content.Server.Tether;
 using Content.Shared._Persistence14.Bastion;
+using Content.Shared._Persistence14.PersistentIdentifier;
 using Content.Shared.EntityTable;
 using Content.Shared.Interaction.Components;
 using Content.Shared.Mobs.Components;
@@ -36,6 +37,7 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
     [Dependency] private readonly TetherLinkSystem _tether = default!;
     [Dependency] private readonly MobStateSystem _mobState = default!;
     [Dependency] private readonly PullingSystem _pulling = default!;
+    [Dependency] private readonly PersistentIdentifierSystem _pid = default!;
 
     private readonly HashSet<Entity<BastionMobComponent>> _strays = new();
 
@@ -50,7 +52,7 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
     /// <summary>No one can grab a guardian while the ruin is reeling it home - the tether has sole claim on it.</summary>
     private void OnMobPullAttempt(Entity<BastionMobComponent> ent, ref BeingPulledAttemptEvent args)
     {
-        if (ent.Comp.FetchTether != null)
+        if (_pid.TryResolveId(ent.Comp.FetchTether, out _))
             args.Cancel();
     }
 
@@ -83,7 +85,7 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
                     _random.NextFloat(-comp.SpawnRadius, comp.SpawnRadius),
                     _random.NextFloat(-comp.SpawnRadius, comp.SpawnRadius));
                 var mob = Spawn(proto, new MapCoordinates(centre.Position + off, centre.MapId));
-                comp.Active.Add(mob);
+                comp.Active.Add(_pid.EnsureId(mob)); // store a persistent id ref (implicitly from the id string)
             }
         }
     }
@@ -121,19 +123,16 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
         {
             var mc = mob.Comp;
 
-            if (mc.FetchTether is { } active)
+            if (_pid.TryResolveId(mc.FetchTether, out var active))
             {
-                if (Exists(active))
-                {
-                    // Release once reeled within range. We detach here rather than waiting on the tether's own
-                    // "Reached" (a collidable mob can't reliably hit the exact ReelDistance and would hang forever).
-                    if ((_transform.GetWorldPosition(mob) - centre.Position).Length() <= ent.Comp.ReelDistance)
-                        _tether.BreakLink(active);
-                    continue; // still reeling
-                }
-
-                mc.FetchTether = null; // tether vanished unexpectedly - fall through and re-fetch
+                // Release once reeled within range. We detach here rather than waiting on the tether's own
+                // "Reached" (a collidable mob can't reliably hit the exact ReelDistance and would hang forever).
+                if ((_transform.GetWorldPosition(mob) - centre.Position).Length() <= ent.Comp.ReelDistance)
+                    _tether.BreakLink(active.Owner);
+                continue; // still reeling
             }
+
+            mc.FetchTether = default; // no live tether (empty ref, or it vanished) - fall through and re-fetch
 
             if (mc.FetchCooldownUntil is { } cd && now < cd)
                 continue; // just released; give traversal a tick to re-anchor it
@@ -153,7 +152,7 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
 
             var tether = _tether.TetherLink(paragon, mob, ent.Comp.TetherVisual, breakOnTargetNotAlive: true);
             _tether.TetherDrive(tether, ent.Comp.ReelDistance, autoDirection: true);
-            mc.FetchTether = tether;
+            mc.FetchTether = _pid.EnsureId(tether); // persistent ref so a reload can't alias it to the wrong entity
 
             // The mob stays collidable. The tether reels it home (kinematic drive, so a pull can't win) and
             // releases on the first TetherMoveEndedEvent (OnMoveEnded): either it arrives within ReelDistance
@@ -170,7 +169,7 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
     /// </summary>
     private void OnMoveEnded(Entity<BastionDefenseMobsComponent> ent, ref TetherMoveEndedEvent args)
     {
-        if (TryComp<BastionMobComponent>(args.Target, out var mc) && mc.FetchTether == args.Tether)
+        if (TryComp<BastionMobComponent>(args.Target, out var mc) && _pid.CompareId(mc.FetchTether, args.Tether))
             _tether.BreakLink(args.Tether);
     }
 
@@ -181,9 +180,9 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
     /// </summary>
     private void OnLinkBroken(Entity<BastionDefenseMobsComponent> ent, ref TetherLinkBrokenEvent args)
     {
-        if (TryComp<BastionMobComponent>(args.Target, out var mc) && mc.FetchTether == args.Tether)
+        if (TryComp<BastionMobComponent>(args.Target, out var mc) && _pid.CompareId(mc.FetchTether, args.Tether))
         {
-            mc.FetchTether = null;
+            mc.FetchTether = default;
             mc.FetchCooldownUntil = _timing.CurTime + TimeSpan.FromSeconds(2);
             RemComp<BlockMovementComponent>(args.Target); // reel over: let it walk and fight again
         }
@@ -192,6 +191,7 @@ public sealed class BastionDefenseMobsSystem : BaseBastionDefenseSystem<BastionD
     private void PruneActive(BastionDefenseMobsComponent comp)
     {
         comp.Active.RemoveAll(m =>
-            !Exists(m) || (TryComp<MobStateComponent>(m, out var state) && _mobState.IsDead(m, state)));
+            !_pid.TryResolveId(m, out var mob)
+            || (TryComp<MobStateComponent>(mob.Owner, out var state) && _mobState.IsDead(mob.Owner, state)));
     }
 }

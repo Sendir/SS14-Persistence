@@ -3,6 +3,7 @@ using System.Numerics;
 using Content.Server.Atmos.EntitySystems;
 using Content.Server.DeviceLinking.Systems;
 using Content.Shared._Persistence14.Bastion;
+using Content.Shared._Persistence14.PersistentIdentifier;
 using Content.Shared.Atmos.Components;
 using Content.Shared.Construction.Components;
 using Content.Shared.Damage.Systems;
@@ -15,16 +16,18 @@ using Robust.Shared.Random;
 namespace Content.Server._Persistence14.Bastion;
 
 /// <summary>
-/// Spawns a Bastion Ruin and binds it to its Paragon Artifact key. This minimal slice generates an
-/// empty asteroid platform in open space (nothing placed on it yet) at a random location anywhere on
-/// the map, clear of every other grid, and records the key↔ruin link. The Paragon Artifact, analyzer,
-/// defenses, and lifecycle come later.
+/// Spawns a Bastion Ruin and binds it to its Paragon Artifact key. It builds an asteroid platform (with a
+/// simulated atmosphere) at a random spot in open space clear of every other grid, places the pad + Paragon
+/// + console on it, and records the two-way key↔ruin link (turning the key into a locator). The Paragon's
+/// defense and self-teardown then run from their own systems. All the ruin's entity links are stored as
+/// persistent references so it survives a world save/reload.
 /// </summary>
 public sealed class BastionRuinSystem : EntitySystem
 {
     [Dependency] private readonly IMapManager _mapManager = default!;
     [Dependency] private readonly ITileDefinitionManager _tileDefManager = default!;
     [Dependency] private readonly IRobustRandom _random = default!;
+    [Dependency] private readonly PersistentIdentifierSystem _pid = default!;
     [Dependency] private readonly SharedMapSystem _map = default!;
     [Dependency] private readonly SharedTransformSystem _transform = default!;
     [Dependency] private readonly EntityLookupSystem _lookup = default!;
@@ -113,7 +116,8 @@ public sealed class BastionRuinSystem : EntitySystem
 
         SpawnRuinContents(gridEnt.Owner, ruinComp);
 
-        Log.Info($"Spawned Bastion Ruin {ToPrettyString(ruin)} (paragon {ToPrettyString(ruinComp.Paragon)}) at {coords} on map {mapId}.");
+        var paragonStr = _pid.TryResolveId(ruinComp.Paragon, out var paragonEnt) ? ToPrettyString(paragonEnt.Owner) : "none";
+        Log.Info($"Spawned Bastion Ruin {ToPrettyString(ruin)} (paragon {paragonStr}) at {coords} on map {mapId}.");
         return true;
     }
 
@@ -133,7 +137,7 @@ public sealed class BastionRuinSystem : EntitySystem
         var pad = Spawn(PadProto, centre);
         var paragon = Spawn(ParagonProtoFor(ruinComp.DefenseType), centre);
         var console = Spawn(ConsoleProto, consoleAt);
-        ruinComp.Paragon = paragon;
+        _pid.AssignIdReference(ref ruinComp.Paragon, paragon);
 
         // Godmode the pad + console (fully invulnerable machines). NOT the Paragon: godmode cancels all
         // damage, which would block its damage-based unlock triggers (radiation, brute, etc.). It has no
@@ -158,24 +162,26 @@ public sealed class BastionRuinSystem : EntitySystem
     /// <summary>Records the two-way key↔ruin binding and turns the key into a locator for the ruin.</summary>
     public void BindKey(EntityUid key, EntityUid ruin)
     {
-        EnsureComp<ParagonArtifactKeyComponent>(key).BastionRuin = ruin;
+        var keyComp = EnsureComp<ParagonArtifactKeyComponent>(key);
+        _pid.AssignIdReference(ref keyComp.BastionRuin, ruin);
 
         if (TryComp<BastionRuinComponent>(ruin, out var ruinComp))
         {
-            ruinComp.Key = key;
+            _pid.AssignIdReference(ref ruinComp.Key, key);
 
             // Point the Paragon at its key so the console's locked screen can show the key's sprite.
-            if (ruinComp.Paragon is { } paragon)
+            if (_pid.TryResolveId(ruinComp.Paragon, out var paragonEnt))
             {
-                var display = EnsureComp<ParagonKeyDisplayComponent>(paragon);
-                display.Key = GetNetEntity(key);
-                Dirty(paragon, display);
+                var display = EnsureComp<ParagonKeyDisplayComponent>(paragonEnt.Owner);
+                _pid.AssignIdReference(ref display.Key, key);
+                Dirty(paragonEnt.Owner, display);
             }
         }
 
         // Make the key beep toward the ruin while held. Target is the ruin for now; later it will be
         // the Paragon Artifact itself.
-        EnsureComp<ParagonArtifactLocatorComponent>(key).Target = ruin;
+        var locator = EnsureComp<ParagonArtifactLocatorComponent>(key);
+        _pid.AssignIdReference(ref locator.Target, ruin);
     }
 
     /// <summary>

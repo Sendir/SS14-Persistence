@@ -1,3 +1,4 @@
+using Content.Shared._Persistence14.PersistentIdentifier.Reference;
 using Robust.Shared.Audio;
 using Robust.Shared.GameStates;
 
@@ -13,9 +14,12 @@ namespace Content.Shared._Persistence14.Bastion;
 [RegisterComponent]
 public sealed partial class ParagonArtifactLocatorComponent : Component
 {
-    /// <summary>What the locator homes in on. The Bastion Ruin for now; the Paragon Artifact later.</summary>
+    /// <summary>
+    /// What the locator homes in on - the Bastion Ruin for now; the Paragon Artifact later.
+    /// <see cref="PersistentEntityReference"/> so a held key still points at its ruin after a save/reload.
+    /// </summary>
     [DataField]
-    public EntityUid? Target;
+    public PersistentEntityReference Target;
 
     /// <summary>At or beyond this distance (tiles) beeps are slowest; they speed up smoothly to 0.</summary>
     [DataField]

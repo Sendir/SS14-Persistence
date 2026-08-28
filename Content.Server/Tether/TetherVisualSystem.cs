@@ -1,4 +1,5 @@
 using Content.Shared.Tether;
+using Robust.Shared.Map;
 using Robust.Shared.Timing;
 
 namespace Content.Server.Tether;
@@ -48,6 +49,34 @@ public sealed class TetherVisualSystem : EntitySystem
     }
 
     /// <summary>
+    /// Like <see cref="SpawnTether"/>, but reaches toward a fixed map position instead of a target entity -
+    /// for "reach out to empty space, then spawn the thing on arrival". The tether has no <see cref="TetherVisualComponent.Target"/>
+    /// until <see cref="TetherLinkSystem.AttachTarget"/> is called (typically on the connect event).
+    /// </summary>
+    public EntityUid SpawnTetherToCoords(EntityUid source, MapCoordinates coords, string prototype,
+        TimeSpan? connectDuration = null, TimeSpan? disconnectDuration = null)
+    {
+        var tether = Spawn(prototype, _transform.GetMapCoordinates(source));
+        var comp = EnsureComp<TetherVisualComponent>(tether);
+        comp.Source = source;
+        comp.Target = EntityUid.Invalid;
+        comp.TargetCoords = coords;
+        comp.ConnectStartedAt = _timing.CurTime;
+
+        if (connectDuration is { } connect)
+            comp.ConnectDuration = connect;
+        if (disconnectDuration is { } disconnect)
+            comp.DisconnectDuration = disconnect;
+
+        Dirty(tether, comp);
+
+        Log.Info($"Spawned tether {ToPrettyString(tether)} from {ToPrettyString(source)} reaching toward {coords} " +
+                 $"(connect: {comp.ConnectDuration.TotalSeconds:F2}s, disconnect: {comp.DisconnectDuration.TotalSeconds:F2}s).");
+
+        return tether;
+    }
+
+    /// <summary>
     /// Starts the tether's retract animation; the entity deletes itself once DisconnectDuration
     /// has elapsed. Safe to call more than once (subsequent calls are ignored) and safe to call
     /// with a zero DisconnectDuration (deletes on the next update, matching the old instant
@@ -62,6 +91,16 @@ public sealed class TetherVisualSystem : EntitySystem
         if (comp.DisconnectStartedAt != null)
             return; // already disconnecting
 
+        // Pin the retract anchor. LastKnownTargetCoords is kept current tick-by-tick while the tether is
+        // connected (see Update), so it already holds the target's last good position; refresh it here from a
+        // still-living target to catch the exact final position. Then clear the (possibly dangling) Target
+        // ref: from here on the client anchors the retract to LastKnownTargetCoords, not the live entity, so
+        // there is no reason to keep networking a Target that may no longer exist - doing so would spam
+        // "can't resolve MetaDataComponent" from PVS every tick until the tether finally deletes.
+        if (Exists(comp.Target))
+            comp.LastKnownTargetCoords = _transform.GetMapCoordinates(comp.Target);
+        comp.Target = EntityUid.Invalid;
+
         comp.DisconnectStartedAt = _timing.CurTime;
         Dirty(tetherUid, comp);
 
@@ -75,23 +114,37 @@ public sealed class TetherVisualSystem : EntitySystem
         var query = EntityQueryEnumerator<TetherVisualComponent>();
         while (query.MoveNext(out var uid, out var tether))
         {
+            // Once disconnecting, just run out the retract timer. Endpoints no longer matter here - Target
+            // has been cleared to Invalid and the retract anchors to LastKnownTargetCoords - so a deleted
+            // target can't short-circuit the animation.
+            if (tether.DisconnectStartedAt is { } startedAt)
+            {
+                if (_timing.CurTime - startedAt >= tether.DisconnectDuration)
+                    QueueDel(uid);
+                continue;
+            }
+
             if (!Exists(tether.Source) || !Exists(tether.Target))
             {
                 // A linked tether's teardown (and its break event) is owned by TetherLinkSystem - let
-                // it observe the missing endpoint and fire TetherLinkBrokenEvent first, rather than
-                // silently deleting the tether out from under it here.
+                // it observe the missing endpoint and fire TetherLinkBrokenEvent first (which begins the
+                // retract), rather than silently deleting the tether out from under it here.
                 if (HasComp<TetherLinkComponent>(uid))
                     continue;
 
-                // An endpoint is outright gone - no sane retract animation possible, just delete.
+                // An unlinked tether with a gone endpoint has no owner to retract it - just delete.
                 QueueDel(uid);
                 continue;
             }
 
-            if (tether.DisconnectStartedAt is { } startedAt &&
-                _timing.CurTime - startedAt >= tether.DisconnectDuration)
+            // Keep the last-known target position current so a disconnect that begins AFTER the target has
+            // already vanished still has somewhere sensible to retract toward. Only re-network on an actual
+            // change, so a stationary target (e.g. a Static anomaly) dirties this exactly once.
+            var pos = _transform.GetMapCoordinates(tether.Target);
+            if (tether.LastKnownTargetCoords != pos)
             {
-                QueueDel(uid);
+                tether.LastKnownTargetCoords = pos;
+                Dirty(uid, tether);
             }
         }
     }

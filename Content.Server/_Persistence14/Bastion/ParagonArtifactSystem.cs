@@ -1,4 +1,5 @@
 using Content.Shared._Persistence14.Bastion;
+using Content.Shared._Persistence14.PersistentIdentifier;
 using Content.Shared.Popups;
 using Content.Shared.Xenoarchaeology.Artifact;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
@@ -16,6 +17,7 @@ public sealed class ParagonArtifactSystem : EntitySystem
 {
     [Dependency] private readonly SharedXenoArtifactSystem _xenoArtifact = default!;
     [Dependency] private readonly SharedPopupSystem _popup = default!;
+    [Dependency] private readonly PersistentIdentifierSystem _pid = default!;
 
     public override void Initialize()
     {
@@ -65,8 +67,9 @@ public sealed class ParagonArtifactSystem : EntitySystem
     {
         if (!TryComp<ParagonArtifactKeyComponent>(key, out var keyComp))
             return false;
-        if (keyComp.BastionRuin is not { } ruin)
+        if (!_pid.TryResolveId(keyComp.BastionRuin, out var ruinEnt))
             return false;
-        return TryComp<BastionRuinComponent>(ruin, out var ruinComp) && ruinComp.Paragon == paragon.Owner;
+        return TryComp<BastionRuinComponent>(ruinEnt.Owner, out var ruinComp)
+            && _pid.CompareId(ruinComp.Paragon, paragon.Owner);
     }
 }

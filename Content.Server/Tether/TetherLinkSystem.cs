@@ -2,6 +2,7 @@ using System.Numerics;
 using Content.Shared.Mobs.Components;
 using Content.Shared.Mobs.Systems;
 using Content.Shared.Tether;
+using Robust.Shared.Map;
 using Robust.Shared.Physics;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Events;
@@ -66,6 +67,46 @@ public sealed class TetherLinkSystem : EntitySystem
         link.BreakOnTargetNotAlive = breakOnTargetNotAlive;
         link.BreakOnDifferentMap = breakOnDifferentMap;
         return tether;
+    }
+
+    /// <summary>
+    /// Spawns a tether that reaches toward a fixed map position with NO target entity - the "reach out to
+    /// empty space, then spawn the thing on arrival" pattern. It still fires <see cref="TetherConnectedEvent"/>
+    /// on the source when the reach finishes; the consumer then spawns whatever belongs at the far end and
+    /// calls <see cref="AttachTarget"/> to bind the tether to it. Until then the missing target is not treated
+    /// as "gone".
+    /// </summary>
+    public EntityUid TetherLinkToCoords(
+        EntityUid source,
+        MapCoordinates coords,
+        string visualPrototype,
+        TimeSpan? connectDuration = null,
+        TimeSpan? disconnectDuration = null)
+    {
+        var tether = _tetherVisual.SpawnTetherToCoords(source, coords, visualPrototype, connectDuration, disconnectDuration);
+        EnsureComp<TetherLinkComponent>(tether);
+        return tether;
+    }
+
+    /// <summary>
+    /// Binds a reach-toward-coords tether (see <see cref="TetherLinkToCoords"/>) to a real target entity - it
+    /// stops being coords-anchored and behaves like a normal entity tether from here on. Typically called from
+    /// the consumer's <see cref="TetherConnectedEvent"/> handler after spawning the far-end entity.
+    /// </summary>
+    public void AttachTarget(EntityUid tether, EntityUid target, float? maxDistance = null, bool breakOnTargetNotAlive = false)
+    {
+        if (!TryComp<TetherVisualComponent>(tether, out var visual))
+            return;
+
+        visual.Target = target;
+        visual.TargetCoords = null;
+        Dirty(tether, visual);
+
+        if (TryComp<TetherLinkComponent>(tether, out var link))
+        {
+            link.MaxDistance = maxDistance;
+            link.BreakOnTargetNotAlive = breakOnTargetNotAlive;
+        }
     }
 
     /// <summary>
@@ -155,13 +196,20 @@ public sealed class TetherLinkSystem : EntitySystem
                     RaiseLocalEvent(visual.Target, ref connected);
             }
 
+            // A coords-reach tether (no Target entity yet, still reaching toward TargetCoords) has no target to
+            // be "gone" - it's waiting for AttachTarget on connect. Only the source going away breaks it.
+            var reachingCoords = !Exists(visual.Target) && visual.TargetCoords != null;
+
             var sourceGone = !Exists(visual.Source);
-            var targetGone = !Exists(visual.Target);
+            var targetGone = !Exists(visual.Target) && !reachingCoords;
             if (sourceGone || targetGone)
             {
                 DoBreak(uid, visual, sourceGone ? TetherBreakReason.SourceGone : TetherBreakReason.TargetGone);
                 continue;
             }
+
+            if (reachingCoords)
+                continue; // nothing else to monitor until a real target is attached
 
             if (link.BreakOnTargetNotAlive
                 && HasComp<MobStateComponent>(visual.Target)
