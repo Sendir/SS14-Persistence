@@ -93,6 +93,16 @@ public sealed partial class XenoArtifactComponent : Component
     public float ArtifexiumCostPerTrigger = 5f;
 
     /// <summary>
+    /// Units of artifact glue required to restore ONE point of node durability via the
+    /// <c>ArtifactDurabilityRestore</c> effect. <c>0</c> (default) keeps the legacy behaviour: any qualifying
+    /// glue application restores the effect's flat amount regardless of dose. When &gt; 0, the amount restored
+    /// scales with the glue applied - floor(unitsApplied / this) - so a dose below the per-point cost restores
+    /// nothing. The Paragon sets this high so its nodes are expensive to repair.
+    /// </summary>
+    [DataField]
+    public float ArtifactGlueCostPerDurability;
+
+    /// <summary>
     /// Multiplier applied to this artifact's effects on activation, passed through
     /// <see cref="SharedXenoArtifactSystem.XenoArtifactNodeActivatedEvent.Scale"/>. 1 = normal; the
     /// Paragon uses 10 and defense-spawned artifacts use 3. Each effect decides how to apply it (some

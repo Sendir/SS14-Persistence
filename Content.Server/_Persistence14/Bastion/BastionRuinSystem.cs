@@ -81,7 +81,7 @@ public sealed class BastionRuinSystem : EntitySystem
         // one tile: a GridAtmosphere added after the tiles exist has no TileAtmosphere for any of them, so
         // gas has nowhere to equalize into. With it present first, each SetTile registers its tile, and we
         // also invalidate them explicitly so the sim picks them all up (then gas disperses and vents to
-        // space at the open platform's edges). Foam is entity-based, which is why it already worked.
+        // space at the open platform's edges).
         EnsureComp<GridAtmosphereComponent>(gridEnt.Owner);
 
         // Tiles span [-RuinHalfSize, RuinHalfSize) so the platform's world extent is symmetric about the

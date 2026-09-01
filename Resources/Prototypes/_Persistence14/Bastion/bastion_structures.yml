@@ -61,6 +61,8 @@
   - type: XenoArtifact
     suppressed: true
     effectScale: 10 # the Paragon's effects are x10 (see per-effect scaling in the XAE systems)
+    artifexiumCostPerTrigger: 20 # x4 the usual 5u of artifexium to substitute for one node trigger
+    artifactGlueCostPerDurability: 50 # x10 the usual 5u of artifact glue per point of node durability repaired
     rootEffectsTable: !type:NestedSelector
       tableId: BastionParagonEffectsRoot
     mainEffectsTable: !type:NestedSelector

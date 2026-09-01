@@ -196,9 +196,7 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
         if (_pid.TryResolveId(entry.Artifact, out var artifact))
             QueueDel(artifact.Owner);
 
-        // Delete the tether visual now too, rather than letting it play out its disconnect animation: it
-        // still points at the artifact we just deleted, and a lingering tether whose target is gone spams
-        // "can't resolve MetaDataComponent" every PVS tick until it finally retracts.
+        // Delete the tether visual now too, rather than letting it play out its disconnect animation
         if (Exists(tether))
             QueueDel(tether);
 

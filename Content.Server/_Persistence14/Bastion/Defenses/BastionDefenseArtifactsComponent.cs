@@ -26,14 +26,14 @@ public sealed partial class BastionDefenseArtifactsComponent : BastionDefenseCom
     /// flung into bare space has no atmosphere to disperse into and just sits on one tile forever.
     /// </summary>
     [DataField]
-    public float MinFlingDistance = 3f;
+    public float MinFlingDistance = 3.5f;
 
     [DataField]
     public float MaxFlingDistance = 5f;
 
-    /// <summary>Distance from centre the artifacts are reeled back to. 0 = onto the Paragon, then deleted on arrival.</summary>
+    /// <summary>Distance from centre the artifacts are reeled back to. Beware of the entity's own size..</summary>
     [DataField]
-    public float ReelDistance;
+    public float ReelDistance = 3.5f;
 
     /// <summary>How long the artifacts hang flung-out before they pulse and get reeled back in.</summary>
     [DataField]
@@ -44,7 +44,7 @@ public sealed partial class BastionDefenseArtifactsComponent : BastionDefenseCom
     /// wave always completes and the Paragon frees up to pulse again.
     /// </summary>
     [DataField]
-    public TimeSpan ReelTimeout = TimeSpan.FromSeconds(8);
+    public TimeSpan ReelTimeout = TimeSpan.FromSeconds(4);
 
     /// <summary>Visual tether prototype linking each artifact to the Paragon.</summary>
     [DataField]

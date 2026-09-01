@@ -17,6 +17,17 @@ public sealed partial class ArtifactDurabilityRestoreEntityEffectsSystem : Entit
     {
         var durability = args.Effect.RestoredDurability;
 
+        // If this artifact charges glue per durability point, scale the restore by how much glue was applied
+        // (args.Scale = units reacted): every ArtifactGlueCostPerDurability units buys one point's worth.
+        // A dose below the per-point cost restores nothing. 0 (default) keeps the legacy flat behaviour.
+        var costPerDurability = entity.Comp.ArtifactGlueCostPerDurability;
+        if (costPerDurability > 0f)
+        {
+            durability *= (int) (args.Scale / costPerDurability);
+            if (durability <= 0)
+                return;
+        }
+
         foreach (var node in _xenoArtifact.GetActiveNodes(entity))
         {
             _xenoArtifact.AdjustNodeDurability(node.Owner, durability);

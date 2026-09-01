@@ -41,9 +41,11 @@ public sealed class BastionPulseSystem : EntitySystem
                 continue;
             }
 
-            if (!AnyPlayerNear(uid, pulse.ActivationRange))
+            // Dormant until the Paragon is unlocked (its key slotted, so the graph is no longer suppressed)
+            // AND a player is in range. A still-sealed Paragon never fires, even with someone standing on it.
+            if (xeno.Suppressed || !AnyPlayerNear(uid, pulse.ActivationRange))
             {
-                // Dormant: keep the timer topped up so it starts fresh the moment players arrive.
+                // Keep the timer topped up so it starts fresh the moment both conditions are met.
                 pulse.NextPulse = now + NextInterval(pulse);
                 SetReadout(uid, pulse, pulse.DormantDescriptor, dormant: true);
                 continue;
