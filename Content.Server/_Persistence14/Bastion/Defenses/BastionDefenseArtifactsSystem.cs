@@ -6,6 +6,7 @@ using Content.Shared.Movement.Pulling.Components;
 using Content.Shared.Xenoarchaeology.Artifact;
 using Content.Shared.Xenoarchaeology.Artifact.Components;
 using Robust.Shared.Map;
+using Robust.Shared.Physics;
 using Robust.Shared.Physics.Components;
 using Robust.Shared.Physics.Systems;
 using Robust.Shared.Random;
@@ -88,10 +89,14 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
     }
 
     /// <summary>
-    /// Strips the artifact's mob-movement + pull machinery and disables its collision. The tether mover
-    /// itself forces the body kinematic and drives it purely by position, so it moves ONLY via the tether
-    /// (immune to its own pulse effects, gravity, etc.); disabling collision lets it phase onto the Paragon
-    /// (ReelDistance 0) so it's deleted the instant it arrives. Runs right after Spawn.
+    /// Strips the artifact's mob-movement + pull machinery and makes it PHASE by turning its fixtures
+    /// non-hard (sensors), so the tether can fling it out through the Paragon's 2x2 wall and reel it back.
+    ///
+    /// SetCanCollide(false) does NOT work here: the tether drives motion with SetLinearVelocity(wakeBody:true),
+    /// and WakeBody re-enables CanCollide to wake the body - so the drone is solid again the instant it's
+    /// driven (it flings fine, but the Paragon's hard fixture then traps it). Making the fixtures non-hard
+    /// instead lets the body stay wakeable/drivable while producing no blocking contacts, so it passes
+    /// straight through solids. Runs right after Spawn.
     /// </summary>
     private void PrepareArtifactBody(EntityUid artifact)
     {
@@ -100,8 +105,11 @@ public sealed class BastionDefenseArtifactsSystem : BaseBastionDefenseSystem<Bas
         RemComp<MobCollisionComponent>(artifact);
         RemComp<PullableComponent>(artifact);
 
-        if (HasComp<PhysicsComponent>(artifact))
-            _physics.SetCanCollide(artifact, false);
+        if (TryComp<FixturesComponent>(artifact, out var fixtures))
+        {
+            foreach (var fixture in fixtures.Fixtures.Values)
+                _physics.SetHard(artifact, fixture, false, fixtures);
+        }
     }
 
     public override void Update(float frameTime)

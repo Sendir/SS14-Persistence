@@ -2,10 +2,6 @@
 # analysis pad + console. All three are made indestructible and un-unanchorable at spawn time
 # (see BastionRuinSystem: EnableGodmode + strip Anchorable) and run without power (needsPower: false),
 # since they are "powered by the artifact". Sprites here are placeholders - assume dedicated art later.
-
-# The base centerpiece. Its own native 2x2 RSI. RandomArtifactSprite is deliberately NOT inherited (we
-# parent the raw bases, not BaseXenoArtifactStructure) so the appearance stays fixed. Defense variants
-# below override the sprite + add a defense component; BastionRuinSystem spawns the right variant.
 - type: entity
   parent: [ BaseStructureDynamic, BaseXenoArtifact ]
   id: StructureParagonArtifact
@@ -13,7 +9,6 @@
   description: The greatest relic of a vanished people, dense with dormant, unknowable power.
   suffix: Bastion
   components:
-  # Native 2x2 (64x64) placeholder RSI - no YAML scaling, so dedicated art drops in at the same size.
   - type: Sprite
     drawdepth: SmallObjects
     sprite: _Persistence14/Bastion/Artifacts/paragon.rsi
@@ -21,8 +16,6 @@
     layers:
     - state: base
       map: [ "enum.ArtifactsVisualLayers.Base" ]
-    # Unlock glow / activation flash: the ORIGINAL animated artifact states (this placeholder's matching
-    # ano##_on + artifact-activation) scaled 2x over the 64x64 base. BastionArtifactVisualsSystem toggles them.
     - sprite: Objects/Specific/Xenoarchaeology/xeno_artifacts.rsi
       state: ano03_on
       scale: 2, 2
@@ -61,28 +54,26 @@
   - type: XenoArtifact
     suppressed: true
     effectScale: 10 # the Paragon's effects are x10 (see per-effect scaling in the XAE systems)
-    artifexiumCostPerTrigger: 20 # x4 the usual 5u of artifexium to substitute for one node trigger
-    artifactGlueCostPerDurability: 50 # x10 the usual 5u of artifact glue per point of node durability repaired
+    artifexiumCostPerTrigger: 20
+    artifactGlueCostPerDurability: 50
     rootEffectsTable: !type:NestedSelector
       tableId: BastionParagonEffectsRoot
     mainEffectsTable: !type:NestedSelector
       tableId: BastionParagonEffectsMain
     deepEffectsTable: !type:NestedSelector
       tableId: BastionParagonEffectsDeep
-    # TESTING: tiny graph so the Paragon can be fully unlocked quickly to exercise the completion/teardown
-    # flow. Restore to a boss-sized graph (~13-26) before shipping.
     nodeCount:
-      min: 3
-      max: 4
+      min: 40
+      max: 44
     segmentSize:
-      min: 3
-      max: 4
+      min: 8
+      max: 13
     nodesPerSegmentLayer:
       min: 1
-      max: 2
+      max: 4
     scatterPerLayer:
       min: 0
-      max: 1
+      max: 4
   - type: ItemSlots
     slots:
       paragon_key:
@@ -104,37 +95,37 @@
   # Auto-teardown: the ruin removes itself when the Paragon is fully unlocked (after a short console
   # countdown) or when its lifetime runs out. TESTING values; raise before shipping.
   - type: BastionLifecycle
-    lifetime: 600 # 10 minutes
-    completionGrace: 10
+    lifetime: 72000 # 20 hours (seconds)
+    completionGrace: 600 # 10 minutes (seconds)
   # Defense-pulse clock. pulseInterval = guaranteed max time between pulses. Bands are matched by
   # seconds-until-next-pulse and drive the console readout; a band with earlyPulseChance can also
   # discharge early while the timer sits in it (per-second chance). Tune all of this here.
   - type: BastionPulse
-    # TESTING cadence: each cycle rolls a random 10-30s interval (pulseInterval is the fallback/guaranteed
-    # max). Retune upward before shipping.
-    pulseInterval: 30
-    pulseIntervalMin: 10
-    pulseIntervalMax: 30
+    # Each cycle rolls a random interval in [min, max]; pulseInterval is the fixed fallback used only if
+    # min/max are unset. All values in seconds.
+    pulseInterval: 600      # 10 min (fallback)
+    pulseIntervalMin: 420   # 7 min
+    pulseIntervalMax: 900   # 15 min
     activationRange: 20 # dormant unless a player is within 20 tiles of the Paragon
+    # Bands are matched by SECONDS-until-next-pulse (window is 420-900s). Sized for the 7-15 min cadence.
     bands:
-    - descriptor: bastion-pulse-distant   # 20s+ out
-      from: 20
-    - descriptor: bastion-pulse-near      # 10-20s out
-      from: 10
-      to: 20
-    - descriptor: bastion-pulse-imminent  # under 10s
+    - descriptor: bastion-pulse-distant   # 6 min+ out (quiet)
+      from: 360
+    - descriptor: bastion-pulse-near      # 2-6 min out (charging)
+      from: 120
+      to: 360
+    - descriptor: bastion-pulse-imminent  # under 2 min; ~0.5%/s chance to discharge early (~45% over the window)
       from: 0
-      to: 10
+      to: 120
+      earlyPulseChance: 0.005
 
-# 2x2 analysis pad the Paragon sits on. Placeholder sprite (scaled analyzer art). CurrentArtifact is
-# wired to the Paragon in code at spawn, since a fixed structure never triggers the ItemPlacer path.
+# 2x2 analysis pad the Paragon sits on.
 - type: entity
   parent: MachineArtifactAnalyzer
   id: MachineParagonAnalyzerPad
   name: paragon analysis pad
   suffix: Bastion
   components:
-  # Native 2x2 (64x64) placeholder RSI - no YAML scaling, so dedicated art drops in at the same size.
   - type: Sprite
     noRot: true
     sprite: _Persistence14/Bastion/Machines/analyzer_pad.rsi
@@ -150,7 +141,6 @@
   # stays put because it's Static, and Anchorable is stripped in code.
   - type: Transform
     anchored: false
-  # 2x2 to match the artifact. Non-hard - the Paragon on top provides the actual 2x2 blocking.
   - type: Fixtures
     fixtures:
       fix1:
@@ -161,8 +151,7 @@
         mask:
         - MachineMask
 
-# The console. Placeholder = the stock analysis console sprite. Extraction-to-disk / locked screen
-# come later; for now it links to the pad and shows the Paragon's graph.
+# The console. Placeholder = the stock analysis console sprite.
 - type: entity
   parent: ComputerAnalysisConsole
   id: MachineParagonAnalysisConsole
@@ -171,8 +160,6 @@
   components:
   - type: ApcPowerReceiver
     needsPower: false
-  # Extract prints points onto a research disk instead of crediting a server (the ruin has none).
-  # The x20 value lives on the Paragon (ArtifactPointMultiplier), not here.
   - type: BastionConsole
   # Its own placeholder sprite folder (copied computer states); swap in dedicated art later.
   - type: Sprite
@@ -217,8 +204,19 @@
       map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
       visible: false
   - type: BastionDefenseArtifacts
-    minCount: 1
-    maxCount: 8
+    minCount: 1              # drones per pulse at severity 0
+    maxCount: 4              # drones per pulse at severity 1
+    minFlingDistance: 3      # fling range, tiles from centre
+    maxFlingDistance: 9
+    reelDistance: 3        # reel drones back to this distance, then delete
+    holdTime: 2              # seconds drones hang out before pulsing
+    reelTimeout: 5           # seconds safety cap on the reel
+    rootUnlockChance: 0.7    # per drone: chance a root node opens
+    depthUnlockBase: 0.15    # deeper-node open chance = base + weight*severity*depth (capped by max)
+    depthSeverityWeight: 0.5
+    maxUnlockChance: 0.95
+    tetherConnectDuration: 0.4    # tether extend/retract animation, seconds
+    tetherDisconnectDuration: 0.4
 
 - type: entity
   parent: StructureParagonArtifact
@@ -245,8 +243,19 @@
       map: [ "enum.ArtifactsVisualLayers.ActivationEffect" ]
       visible: false
   - type: BastionDefenseAnomalies
-    minCount: 1
-    maxCount: 3
+    minCount: 1              # anomalies per pulse at severity 0
+    maxCount: 5              # anomalies per pulse at severity 1
+    maxAlive: 20             # cap on simultaneously-live anomalies
+    minDistance: 3           # placement ring, tiles from centre
+    maxDistance: 9
+    leashRange: 9            # gauntlet-punch distance that force-crits
+    minRampPerSecond: 0.02   # severity ramp toward crit (lerped by Paragon severity)
+    maxRampPerSecond: 0.1
+    growDuration: 0.8        # materialize animation, seconds
+    startScale: 0.2
+    trapHoldTime: 1.5        # seconds a tether lingers on an injector trap
+    tetherConnectDuration: 2
+    tetherDisconnectDuration: 2
 
 - type: entity
   parent: StructureParagonArtifact
@@ -284,8 +293,17 @@
     deepEffectsTable: !type:NestedSelector
       tableId: BastionParagonMobEffectsDeep
   - type: BastionDefenseMobs
-    minCount: 1
-    maxCount: 5
+    minCount: 2              # mobs per wave at severity 0
+    maxCount: 10             # mobs per wave at severity 1
+    maxAlive: 50             # live-wave cap
+    mediumSeverity: 0.34     # severity to switch to the medium pool
+    deadlySeverity: 0.67     # severity to switch to the deadly pool
+    spawnRadius: 6           # wave scatter around the Paragon
+    leashRadius: 9           # reel home past this. = the platform's max reach (RuinHalfSize 9)
+    fetchScanRadius: 30      # how far out strays are scanned for (must be >= leashRadius to catch them)
+    reelDistance: 3        # release distance when reeled home
+    fetchScanInterval: 1     # seconds between stray scans
+    # pools default to BastionMobPool{Weak,Medium,Deadly} (defined in bastion_mob_defense.yml)
 
 # --- Defense A payload: the artifacts the Artifacts-defense Paragon flings out. A structure artifact
 # (parent ComplexXenoArtifact => non-handheld effect tables, so it can NEVER roll the resync effect and
@@ -301,13 +319,9 @@
   # defense system converts it to a Dynamic prop at spawn (strips the mob-mover comps + sets Dynamic) so
   # the tether's MouseJoint can physically fling and reel it - see BastionDefenseArtifactsSystem.
   components:
-  # effectScale + Bastion effect pools only; node counts inherit ComplexXenoArtifact (13-26), so these are
-  # full-size artifacts like any other large in-game artifact.
   - type: XenoArtifact
     # Suppressed: the Bastion system fully drives these (unlocks nodes + pulses them directly). Suppression
-    # stops the XAT trigger/unlock machinery from running on them - ambient gas/heat/pressure would otherwise
-    # constantly push them into unlock states, and the unlock graph traversal throws on their transient nodes
-    # during client prediction as they spawn+delete. SetNodeUnlocked / ActivateNode still work while suppressed.
+    # stops the XAT trigger/unlock machinery from running on them - ambient gas/heat/pressure
     suppressed: true
     effectScale: 3 # defense artifacts fire at x3 (see per-effect scaling in the XAE systems)
     rootEffectsTable: !type:NestedSelector
