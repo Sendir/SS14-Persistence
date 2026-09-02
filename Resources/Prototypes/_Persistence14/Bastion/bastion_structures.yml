@@ -130,11 +130,9 @@
     noRot: true
     sprite: _Persistence14/Bastion/Machines/analyzer_pad.rsi
     drawdepth: HighFloorObjects
+    scale: 1.5, 1.5
     layers:
-    - state: icon
-    - state: unshaded
-      shader: unshaded
-      map: ["enum.PowerDeviceVisualLayers.Powered"]
+    - state: paragon_pad
   - type: ApcPowerReceiver
     needsPower: false
   # Not tile-anchored (positioned precisely at spawn to line up as a clean 2x2 under the Paragon);
